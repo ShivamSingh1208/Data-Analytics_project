@@ -1,0 +1,48 @@
+slice_name: leave Request By Status
+description: null
+certified_by: null
+certification_details: null
+viz_type: pie
+params:
+  datasource: 4__table
+  viz_type: pie
+  groupby:
+  - status
+  metric:
+    expressionType: SQL
+    sqlExpression: COUNT(leave_request_id)
+    column: null
+    aggregate: null
+    datasourceWarning: false
+    hasCustomLabel: false
+    label: COUNT(leave_request_id)
+    optionName: metric_zny0hksqw5r_iqzgfg4y9c
+  adhoc_filters:
+  - clause: WHERE
+    subject: start_date
+    operator: TEMPORAL_RANGE
+    comparator: No filter
+    expressionType: SIMPLE
+  row_limit: 100
+  sort_by_metric: true
+  color_scheme: supersetColors
+  show_labels_threshold: 5
+  show_legend: true
+  legendType: scroll
+  legendOrientation: top
+  label_type: key
+  number_format: SMART_NUMBER
+  date_format: smart_date
+  show_labels: true
+  labels_outside: true
+  outerRadius: 70
+  innerRadius: 30
+  extra_form_data: {}
+  dashboards: []
+query_context: '{"datasource":{"id":4,"type":"table"},"force":false,"queries":[{"filters":[{"col":"start_date","op":"TEMPORAL_RANGE","val":"No
+  filter"}],"extras":{"having":"","where":""},"applied_time_extras":{},"columns":["status"],"metrics":[{"expressionType":"SQL","sqlExpression":"COUNT(leave_request_id)","column":null,"aggregate":null,"datasourceWarning":false,"hasCustomLabel":false,"label":"COUNT(leave_request_id)","optionName":"metric_zny0hksqw5r_iqzgfg4y9c"}],"orderby":[[{"expressionType":"SQL","sqlExpression":"COUNT(leave_request_id)","column":null,"aggregate":null,"datasourceWarning":false,"hasCustomLabel":false,"label":"COUNT(leave_request_id)","optionName":"metric_zny0hksqw5r_iqzgfg4y9c"},false]],"annotation_layers":[],"row_limit":100,"series_limit":0,"order_desc":true,"url_params":{},"custom_params":{},"custom_form_data":{}}],"form_data":{"datasource":"4__table","viz_type":"pie","groupby":["status"],"metric":{"expressionType":"SQL","sqlExpression":"COUNT(leave_request_id)","column":null,"aggregate":null,"datasourceWarning":false,"hasCustomLabel":false,"label":"COUNT(leave_request_id)","optionName":"metric_zny0hksqw5r_iqzgfg4y9c"},"adhoc_filters":[{"clause":"WHERE","subject":"start_date","operator":"TEMPORAL_RANGE","comparator":"No
+  filter","expressionType":"SIMPLE"}],"row_limit":100,"sort_by_metric":true,"color_scheme":"supersetColors","show_labels_threshold":5,"show_legend":true,"legendType":"scroll","legendOrientation":"top","label_type":"key","number_format":"SMART_NUMBER","date_format":"smart_date","show_labels":true,"labels_outside":true,"outerRadius":70,"innerRadius":30,"extra_form_data":{},"dashboards":[],"force":false,"result_format":"json","result_type":"full"},"result_format":"json","result_type":"full"}'
+cache_timeout: null
+uuid: dfe700bc-1eeb-4450-bac0-64b5f22b62b5
+version: 1.0.0
+dataset_uuid: f683db5d-fe55-43c3-bc08-68296cb59553

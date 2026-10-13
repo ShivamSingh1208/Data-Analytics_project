@@ -1,0 +1,30 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# macOS
+.DS_Store
+
+# Logs and generated output
+logs/
+output/
+
+# Local database and temporary files
+*.sqlite
+*.db
+
+data/*.csv
+
+# Keep local datasets out of Git
+/data/*.csv
+/ data/*.csv

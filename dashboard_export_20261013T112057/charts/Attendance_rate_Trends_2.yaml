@@ -1,0 +1,49 @@
+slice_name: Attendance rate Trends
+description: null
+certified_by: null
+certification_details: null
+viz_type: line
+params:
+  datasource: 3__table
+  viz_type: line
+  granularity_sqla: period_end_date
+  time_grain_sqla: P1D
+  time_range: No filter
+  metrics:
+  - expressionType: SQL
+    sqlExpression: AVG(attendance_rate)
+    column: null
+    aggregate: null
+    datasourceWarning: false
+    hasCustomLabel: false
+    label: AVG(attendance_rate)
+    optionName: metric_dahhod33sbo_74kckjo7dgk
+  adhoc_filters: []
+  groupby: []
+  order_desc: true
+  row_limit: 50000
+  color_scheme: supersetColors
+  show_brush: auto
+  show_legend: true
+  rich_tooltip: true
+  line_interpolation: linear
+  bottom_margin: auto
+  x_ticks_layout: auto
+  x_axis_format: smart_date
+  left_margin: auto
+  y_axis_format: SMART_NUMBER
+  y_axis_bounds:
+  - null
+  - null
+  rolling_type: None
+  comparison_type: values
+  annotation_layers: []
+  extra_form_data: {}
+  dashboards: []
+query_context: '{"datasource":{"id":3,"type":"table"},"force":false,"queries":[{"time_range":"No
+  filter","granularity":"period_end_date","filters":[],"extras":{"time_grain_sqla":"P1D","having":"","where":""},"applied_time_extras":{},"columns":[],"metrics":[{"expressionType":"SQL","sqlExpression":"AVG(attendance_rate)","column":null,"aggregate":null,"datasourceWarning":false,"hasCustomLabel":false,"label":"AVG(attendance_rate)","optionName":"metric_dahhod33sbo_74kckjo7dgk"}],"annotation_layers":[],"row_limit":50000,"series_limit":0,"order_desc":true,"url_params":{},"custom_params":{},"custom_form_data":{}}],"form_data":{"datasource":"3__table","viz_type":"line","granularity_sqla":"period_end_date","time_grain_sqla":"P1D","time_range":"No
+  filter","metrics":[{"expressionType":"SQL","sqlExpression":"AVG(attendance_rate)","column":null,"aggregate":null,"datasourceWarning":false,"hasCustomLabel":false,"label":"AVG(attendance_rate)","optionName":"metric_dahhod33sbo_74kckjo7dgk"}],"adhoc_filters":[],"groupby":[],"order_desc":true,"row_limit":50000,"color_scheme":"supersetColors","show_brush":"auto","show_legend":true,"rich_tooltip":true,"line_interpolation":"linear","bottom_margin":"auto","x_ticks_layout":"auto","x_axis_format":"smart_date","left_margin":"auto","y_axis_format":"SMART_NUMBER","y_axis_bounds":[null,null],"rolling_type":"None","comparison_type":"values","annotation_layers":[],"extra_form_data":{},"dashboards":[],"force":false,"result_format":"json","result_type":"full"},"result_format":"json","result_type":"full"}'
+cache_timeout: null
+uuid: ed1b7428-5f60-4a5a-9d9c-c09b657fcf6b
+version: 1.0.0
+dataset_uuid: f0d4427f-08c3-4cbb-96a7-189164a1ad44

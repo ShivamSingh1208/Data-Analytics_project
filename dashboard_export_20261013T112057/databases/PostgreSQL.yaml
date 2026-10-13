@@ -1,0 +1,16 @@
+database_name: PostgreSQL
+sqlalchemy_uri: postgresql+psycopg2://pulseiq:XXXXXXXXXX@postgres:5432/pulseiq
+cache_timeout: null
+expose_in_sqllab: true
+allow_run_async: false
+allow_ctas: false
+allow_cvas: false
+allow_dml: false
+allow_file_upload: false
+extra:
+  metadata_params: {}
+  engine_params: {}
+  metadata_cache_timeout: {}
+  schemas_allowed_for_file_upload: []
+uuid: fbbe4405-92e6-4716-9a6c-21fd4794fb33
+version: 1.0.0
