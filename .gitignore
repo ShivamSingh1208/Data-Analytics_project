@@ -1,42 +1,45 @@
-# Python
-.venv/
-venv/
-__pycache__/
-*.py[cod]
-.pytest_cache/
-
-# Secrets and environment files
+# Secrets and local environment
 .env
 .env.*
 !.env.example
 *.pem
 *.key
+credentials.json
 
-# macOS
+# Python environments and cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# macOS and editors
 .DS_Store
+.vscode/
+.idea/
 
-# Logs and generated output
-logs/
-output/
-
-# Local database and temporary files
-*.sqlite
-*.db
-
-data/*.csv
-
-# Keep local datasets out of Git
+# Local datasets
 /data/*.csv
 / data/*.csv
 
-# Local backups and generated exports
+# Generated ETL output and logs
+logs/
+output/
+
+# Local databases and backups
+*.sqlite
+*.sqlite3
+*.db
+*.backup
+*.before_pandera
 superset_home_backup.tar.gz
 recovery/
-dashboard_export_*/
-*.before_pandera
-*.backup
 
-# Python cache and local environment
-__pycache__/
-*.py[cod]
-.venv/
+# Generated dashboard exports
+dashboard_export_*/
+
+# Temporary files
+*.tmp
+*.swp

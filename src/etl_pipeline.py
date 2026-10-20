@@ -247,6 +247,30 @@ def clean_table(table_name, rules):
         df[column] = parsed
 
     # Convert monetary fields to numbers.
+    # Validate leave date ranges.
+    if table_name == "fact_leave":
+        for column in ["start_date", "end_date"]:
+            if column not in df.columns:
+                raise ValueError(
+                    f"fact_leave: required date column missing: {column}"
+                )
+
+        start_date = pd.to_datetime(
+            df["start_date"],
+            errors="coerce",
+        )
+
+        end_date = pd.to_datetime(
+            df["end_date"],
+            errors="coerce",
+        )
+
+        flag(
+            start_date.notna()
+            & end_date.notna()
+            & start_date.gt(end_date),
+            "start_date is after end_date",
+        )
     for column in rules["money"]:
         if column not in df.columns:
             continue
