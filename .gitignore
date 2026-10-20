@@ -28,3 +28,15 @@ data/*.csv
 # Keep local datasets out of Git
 /data/*.csv
 / data/*.csv
+
+# Local backups and generated exports
+superset_home_backup.tar.gz
+recovery/
+dashboard_export_*/
+*.before_pandera
+*.backup
+
+# Python cache and local environment
+__pycache__/
+*.py[cod]
+.venv/

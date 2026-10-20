@@ -1,39 +1,72 @@
-
 from pathlib import Path
+from datetime import datetime, timezone
 import json
-import pandas as pd
+import sys
 
-# Project folders
-PROJECT = Path(".")
+import pandas as pd
+from pandera_validation import get_validation_errors
+
+
+# --------------------------------------------------
+# Project paths
+# --------------------------------------------------
+
+PROJECT = Path(__file__).resolve().parent.parent
+DATA_FOLDER = PROJECT / " data"
+
 OUTPUT = PROJECT / "output" / "cleaned"
 REJECTED = PROJECT / "output" / "rejected"
-REPORTS = PROJECT / "logs"
+LOGS = PROJECT / "logs"
 
-for folder in [OUTPUT, REJECTED, REPORTS]:
+for folder in [OUTPUT, REJECTED, LOGS]:
     folder.mkdir(parents=True, exist_ok=True)
 
-# Tables for our first ETL run
+
+# --------------------------------------------------
+# Dataset validation rules
+# --------------------------------------------------
+
 TABLES = {
     "fact_payroll": {
         "required": [
-            "payroll_item_id", "employee_id", "employee_key",
-            "date_key", "period_end_date"
+            "payroll_item_id",
+            "employee_id",
+            "employee_key",
+            "date_key",
+            "period_end_date",
         ],
         "id": "payroll_item_id",
         "dates": ["period_end_date"],
         "money": [
-            "monthly_fixed_gross", "basic", "hra", "conveyance",
-            "medical", "special_allowance", "earned_fixed_pay",
-            "overtime_pay", "variable_pay", "gross_pay",
-            "pf_employee", "esi_employee", "professional_tax",
-            "tds", "other_deductions", "total_deductions",
-            "net_pay", "pf_employer", "esi_employer", "employer_cost"
+            "monthly_fixed_gross",
+            "basic",
+            "hra",
+            "conveyance",
+            "medical",
+            "special_allowance",
+            "earned_fixed_pay",
+            "overtime_pay",
+            "variable_pay",
+            "gross_pay",
+            "pf_employee",
+            "esi_employee",
+            "professional_tax",
+            "tds",
+            "other_deductions",
+            "total_deductions",
+            "net_pay",
+            "pf_employer",
+            "esi_employer",
+            "employer_cost",
         ],
     },
     "fact_attendance_monthly": {
         "required": [
-            "attendance_fact_id", "employee_id", "employee_key",
-            "date_key", "period_end_date"
+            "attendance_fact_id",
+            "employee_id",
+            "employee_key",
+            "date_key",
+            "period_end_date",
         ],
         "id": "attendance_fact_id",
         "dates": ["period_end_date"],
@@ -41,13 +74,19 @@ TABLES = {
     },
     "dim_employee": {
         "required": [
-            "employee_key", "employee_id", "full_name",
-            "valid_from", "is_current"
+            "employee_key",
+            "employee_id",
+            "full_name",
+            "valid_from",
+            "is_current",
         ],
         "id": "employee_key",
         "dates": [
-            "date_of_birth", "hire_date", "exit_date",
-            "valid_from", "valid_to"
+            "date_of_birth",
+            "hire_date",
+            "exit_date",
+            "valid_from",
+            "valid_to",
         ],
         "money": [],
     },
@@ -60,365 +99,490 @@ TABLES = {
 }
 
 
+# --------------------------------------------------
+# Locate source CSVs
+# --------------------------------------------------
+
 def find_source(table_name):
-    """Find the original CSV, not a generated output file."""
+    """Find a source CSV without using generated output files."""
+
     candidates = [
-        path for path in PROJECT.rglob("*.csv")
-        if path.name.lower().endswith(table_name.lower() + ".csv")
-        and "output" not in [part.lower() for part in path.parts]
+        path
+        for path in DATA_FOLDER.glob("*.csv")
+        if path.name.lower().endswith(
+            f"{table_name.lower()}.csv"
+        )
         and not path.name.lower().startswith("cleaned_")
-        and ".venv" not in path.parts
     ]
 
     if not candidates:
-        return None
-
-    # Prefer a CSV directly in the data folder.
-    candidates.sort(
-        key=lambda p: (
-            0 if p.parent.name.strip().lower() == "data" else 1,
-            len(p.parts)
+        raise FileNotFoundError(
+            f"Source CSV not found for {table_name} "
+            f"in {DATA_FOLDER}"
         )
-    )
-    return candidates[0]
+
+    return sorted(candidates)[0]
 
 
-def clean_table(table_name, rules):
+# --------------------------------------------------
+# Read source data
+# --------------------------------------------------
+
+def read_source(table_name):
+    """Read a source CSV and normalize column names."""
+
     source = find_source(table_name)
 
-    if source is None:
-        print(f"SKIPPED: {table_name} CSV not found")
-        return {
-            "table": table_name,
-            "status": "missing source",
-        }
+    df = pd.read_csv(
+        source,
+        encoding="utf-8-sig",
+        keep_default_na=False,
+    )
 
-    print(f"\nProcessing: {table_name}")
-    print(f"Source: {source}")
-
-    df = pd.read_csv(source, encoding="utf-8-sig")
     df.columns = df.columns.str.strip()
+
+    # Normalize blank cells without converting valid text to NaN.
+    for column in df.columns:
+        if df[column].dtype == object:
+            df[column] = df[column].map(
+                lambda value: (
+                    value.strip()
+                    if isinstance(value, str)
+                    else value
+                )
+            )
+
+    df = df.replace("", pd.NA)
+
+    return source, df
+
+
+# --------------------------------------------------
+# Clean and validate a dataset
+# --------------------------------------------------
+
+def clean_table(table_name, rules):
+    source, df = read_source(table_name)
+
     original_rows = len(df)
 
-    # Remove leading/trailing spaces in text fields.
-    for column in df.select_dtypes(include="object").columns:
-        df[column] = df[column].map(
-            lambda value: value.strip() if isinstance(value, str)
-            else value
-        )
-        df[column] = df[column].replace("", pd.NA)
+    print(f"\nProcessing: {table_name}")
+    print(f"Source: {source.name}")
+    print(f"Input rows: {original_rows}")
 
-     
-    # Convert date columns. Treat 9999-12-31 as an open-ended valid_to date.
-    for column in rules["dates"]:
-        if column in df.columns:
-            if column == "valid_to":
-                df[column] = df[column].replace(
-                    "9999-12-31", pd.NA
-                )
-
-            df[column] = pd.to_datetime(
-                df[column], errors="coerce"
-            )
-
-    # Convert payroll amounts such as "144,460.00" into numbers.
-    for column in rules["money"]:
-        if column in df.columns:
-            values = (
-                df[column].astype("string")
-                .str.replace(",", "", regex=False)
-                .str.strip()
-            )
-            df[column] = pd.to_numeric(
-                values, errors="coerce"
-            )
-
-    # Collect reasons why a row should be rejected.
-    reasons = pd.Series("", index=df.index, dtype="object")
-
-    def flag(condition, message):
-        nonlocal reasons
-        condition = condition.fillna(False)
-        reasons.loc[condition] = reasons.loc[condition].map(
-            lambda old: old + "; " + message if old else message
-        )
-
-    # Required fields must exist and must not be empty.
+    # Confirm required columns exist.
     for column in rules["required"]:
         if column not in df.columns:
             raise ValueError(
                 f"{table_name}: required column missing: {column}"
             )
+
+    # Preserve the original values for invalid-date checks.
+    original_date_values = {
+        column: df[column].copy()
+        for column in rules["dates"]
+        if column in df.columns
+    }
+
+    reasons = pd.Series(
+        "",
+        index=df.index,
+        dtype="object",
+    )
+
+    def flag(condition, message):
+        """Append a rejection reason for every matching row."""
+
+        condition = pd.Series(
+            condition,
+            index=df.index,
+        ).fillna(False).astype(bool)
+
+        existing = reasons.loc[condition]
+
+        reasons.loc[condition] = existing.map(
+            lambda old: (
+                f"{old}; {message}"
+                if old
+                else message
+            )
+        )
+
+    # Validate required values.
+    for column in rules["required"]:
         flag(
             df[column].isna(),
-            f"missing required {column}"
+            f"missing required {column}",
         )
 
-    # Reject non-empty dates that could not be parsed.
+    # Parse dates and reject invalid non-empty values.
     for column in rules["dates"]:
-        if column in df.columns:
-            raw = pd.read_csv(
-                source,
-                usecols=[column],
-                encoding="utf-8-sig",
-                keep_default_na=False
-            )[column]
+        if column not in df.columns:
+            continue
 
-            raw_text = raw.astype(str).str.strip()
-            raw_present = raw_text.ne("")
-            invalid_date = raw_present & df[column].isna()
+        original = original_date_values[column].astype("string").str.strip()
 
-            if column == "valid_to":
-                invalid_date = (
-                    invalid_date
-                    & raw_text.ne("9999-12-31")
-                )
+        # 9999-12-31 represents an open-ended valid_to value.
+        if column == "valid_to":
+            open_ended = original.eq("9999-12-31")
+            df.loc[open_ended, column] = pd.NA
+            original = original.mask(open_ended, pd.NA)
 
-            flag(
-                invalid_date,
-                f"invalid date in {column}"
-            )
+        parsed = pd.to_datetime(
+            df[column],
+            errors="coerce",
+        )
 
+        invalid_date = (
+            original.notna()
+            & original.ne("")
+            & parsed.isna()
+        )
 
-    # A fact's date_key should match its period-end date.
-    if "date_key" in df.columns and "period_end_date" in df.columns:
-        date_key = pd.to_numeric(df["date_key"], errors="coerce")
+        flag(
+            invalid_date,
+            f"invalid date in {column}",
+        )
+
+        df[column] = parsed
+
+    # Convert monetary fields to numbers.
+    for column in rules["money"]:
+        if column not in df.columns:
+            continue
+
+        original = df[column].astype("string").str.strip()
+
+        normalized = original.str.replace(
+            ",",
+            "",
+            regex=False,
+        )
+
+        parsed = pd.to_numeric(
+            normalized,
+            errors="coerce",
+        )
+
+        invalid_money = (
+            original.notna()
+            & original.ne("")
+            & parsed.isna()
+        )
+
+        flag(
+            invalid_money,
+            f"invalid numeric amount in {column}",
+        )
+
+        df[column] = parsed
+
+        flag(
+            parsed.lt(0),
+            f"negative amount in {column}",
+        )
+
+    # Validate date_key against period_end_date.
+    if (
+        "date_key" in df.columns
+        and "period_end_date" in df.columns
+    ):
+        date_key = pd.to_numeric(
+            df["date_key"],
+            errors="coerce",
+        )
+
         expected_key = pd.to_numeric(
             df["period_end_date"].dt.strftime("%Y%m%d"),
-            errors="coerce"
+            errors="coerce",
         )
+
         flag(
-            date_key.isna() | expected_key.isna() |
-            date_key.ne(expected_key),
-            "date_key does not match period_end_date"
+            date_key.isna()
+            | expected_key.isna()
+            | date_key.ne(expected_key),
+            "date_key does not match period_end_date",
         )
+
         df["date_key"] = date_key
 
-    # Reject negative payroll amounts, but do not replace them with zero.
-    for column in rules["money"]:
-        if column in df.columns:
-            flag(
-                df[column].lt(0),
-                f"negative amount in {column}"
-            )
-
-    # Identifiers configured as unique must not be missing or duplicated.
+    # Validate unique identifiers.
     unique_id = rules["id"]
-    if unique_id and unique_id in df.columns:
-        duplicate_id = (
+
+    if unique_id:
+        flag(
             df[unique_id].notna()
-            & df[unique_id].duplicated(keep=False)
+            & df[unique_id].duplicated(keep=False),
+            f"duplicate {unique_id}",
         )
-        flag(duplicate_id, f"duplicate {unique_id}")
 
-    # Attendance after employee exit check
+    # Validate attendance against employee exit month.
     if table_name == "fact_attendance_monthly":
+        _, employee_dim = read_source("dim_employee")
 
-        employee_source = find_source("dim_employee")
-
-        if employee_source is None:
-            raise FileNotFoundError(
-                "Cannot validate attendance: dim_employee source not found"
-            )
-
-        employee_dim = pd.read_csv(
-            employee_source,
-            usecols=["employee_id", "exit_date"],
-            dtype={"employee_id": "string"},
-            encoding="utf-8-sig"
-        )
+        for column in ["employee_id", "exit_date"]:
+            if column not in employee_dim.columns:
+                raise ValueError(
+                    f"Employee source is missing {column}"
+                )
 
         employee_dim["employee_id"] = (
-            employee_dim["employee_id"].str.strip()
+            employee_dim["employee_id"].astype("string").str.strip()
         )
+
         employee_dim["exit_date"] = pd.to_datetime(
             employee_dim["exit_date"],
-            errors="coerce"
+            errors="coerce",
         )
 
-        # Consolidate historical employee records into one exit date.
-        exit_dates = employee_dim.groupby("employee_id")[
-            "exit_date"
-        ].max()
+        exit_dates = employee_dim.groupby(
+            "employee_id"
+        )["exit_date"].max()
 
-        attendance_employee_ids = (
+        employee_ids = (
             df["employee_id"].astype("string").str.strip()
         )
-        attendance_dates = pd.to_datetime(
-            df["period_end_date"],
-            errors="coerce"
+
+        exit_date = employee_ids.map(exit_dates)
+
+        attendance_month = (
+            df["period_end_date"].dt.to_period("M")
         )
-        employee_exit_dates = attendance_employee_ids.map(exit_dates)
 
-        # Reject attendance only when its calendar month is
-        # later than the employee's exit month.
-        attendance_month = attendance_dates.dt.to_period("M")
-        exit_month = employee_exit_dates.dt.to_period("M")
+        employee_exit_month = exit_date.dt.to_period("M")
 
-        attendance_after_exit = (
+        after_exit = (
             attendance_month.notna()
-            & exit_month.notna()
-            & (attendance_month > exit_month)
+            & employee_exit_month.notna()
+            & attendance_month.gt(employee_exit_month)
         )
 
         flag(
-            attendance_after_exit,
-            "attendance month ends after employee exit month"
+            after_exit,
+            "attendance month ends after employee exit month",
         )
 
-    # Payroll business-rule checks
+    # Validate payroll employee IDs against the dimension.
     if table_name == "fact_payroll":
-
-        # DQ-C03: One payroll row per employee per run.
-        duplicate_payroll = df.duplicated(
-            subset=["employee_id", "run_id"],
-            keep="first"
-        )
-        flag(
-            duplicate_payroll,
-            "duplicate employee_id + run_id combination" 
-        )
-
-        # DQ-C04: Payroll employee IDs must exist in source dimension.
-        employee_source = find_source("dim_employee")
-
-        if employee_source is None:
-            raise FileNotFoundError(
-                "Cannot validate payroll: dim_employee source not found"
-            )
-
-        employee_dim = pd.read_csv(
-            employee_source,
-            usecols=["employee_id"],
-            dtype={"employee_id": "string"},
-            encoding="utf-8-sig"
-        )
+        _, employee_dim = read_source("dim_employee")
 
         valid_employee_ids = set(
-            employee_dim["employee_id"].dropna().str.strip()
+            employee_dim["employee_id"]
+            .dropna()
+            .astype("string")
+            .str.strip()
         )
 
         payroll_employee_ids = (
             df["employee_id"].astype("string").str.strip()
         )
 
-        orphan_employee = (
+        flag(
             payroll_employee_ids.notna()
-            & ~payroll_employee_ids.isin(valid_employee_ids)
+            & ~payroll_employee_ids.isin(valid_employee_ids),
+            "employee_id not found in dim_employee",
+        )
+
+        if "run_id" not in df.columns:
+            raise ValueError(
+                "fact_payroll is missing required business key run_id"
+            )
+
+        duplicate_payroll = df.duplicated(
+            subset=["employee_id", "run_id"],
+            keep=False,
         )
 
         flag(
-            orphan_employee,
-            "employee_id not found in dim_employee"
+            duplicate_payroll,
+            "duplicate employee_id + run_id combination",
         )
 
-    # Separate valid and rejected rows.
+    
+        # Apply Pandera validation to records that passed existing checks.
+    candidate_mask = reasons.eq("")
+    candidates = df.loc[candidate_mask].copy()
+
+    pandera_errors = get_validation_errors(
+        table_name,
+        candidates,
+    )
+
+    # Add Pandera errors to the existing rejection reasons.
+    for row_index, error_messages in pandera_errors.items():
+        if row_index not in reasons.index:
+            continue
+
+        existing = reasons.loc[row_index]
+
+        for message in error_messages:
+            if existing:
+                existing = f"{existing}; {message}"
+            else:
+                existing = message
+
+        reasons.loc[row_index] = existing
+
+    # Separate rejected and clean records.
     rejected_mask = reasons.ne("")
+
     rejected = df.loc[rejected_mask].copy()
     rejected["reject_reason"] = reasons.loc[rejected_mask]
 
     clean = df.loc[~rejected_mask].copy()
 
-    # Remove exact duplicate rows from the valid output.
+    # Remove exact duplicates only from otherwise valid records.
     before_duplicates = len(clean)
+
     clean = clean.drop_duplicates()
-    exact_duplicates_removed = before_duplicates - len(clean)
 
-    # Save the cleaned and rejected data separately.
-    clean.to_csv(OUTPUT / f"cleaned_{table_name}.csv", index=False)
-    
-    # Count the rejected rows by reason.
+    exact_duplicates_removed = (
+        before_duplicates - len(clean)
+    )
+
+    # Save outputs.
+    clean_path = OUTPUT / f"cleaned_{table_name}.csv"
+    rejected_path = REJECTED / f"rejected_{table_name}.csv"
+
+    clean.to_csv(
+        clean_path,
+        index=False,
+        date_format="%Y-%m-%d",
+    )
+
+    rejected.to_csv(
+        rejected_path,
+        index=False,
+        date_format="%Y-%m-%d",
+    )
+
+    # Count rejection reasons.
     rejection_reason_counts = {}
 
     if not rejected.empty:
+        all_reasons = (
+            rejected["reject_reason"]
+            .str.split("; ")
+            .explode()
+        )
+
         rejection_reason_counts = {
             str(reason): int(count)
-            for reason, count in (
-                rejected["reject_reason"]
-                .value_counts()
-                .items()
-            )
+            for reason, count in all_reasons.value_counts().items()
         }
 
     result = {
         "table": table_name,
-        "source_file": str(source),
+        "source_file": str(source.relative_to(PROJECT)),
         "input_rows": original_rows,
         "clean_rows": len(clean),
         "rejected_rows": len(rejected),
         "exact_duplicates_removed": exact_duplicates_removed,
         "rejection_reason_counts": rejection_reason_counts,
-        "status": "completed",
-    }
- 
-
-     
-    # Count the rejected rows by reason.
-    rejection_reason_counts = {}
-
-    if not rejected.empty:
-        rejection_reason_counts = {
-            str(reason): int(count)
-            for reason, count in (
-                rejected["reject_reason"]
-                .value_counts()
-                .items()
-            )
-        }
-
-    result = {
-        "table": table_name,
-        "source_file": str(source),
-        "input_rows": original_rows,
-        "clean_rows": len(clean),
-        "rejected_rows": len(rejected),
-        "exact_duplicates_removed": exact_duplicates_removed,
-        "rejection_reason_counts": rejection_reason_counts,
+        "clean_file": str(clean_path.relative_to(PROJECT)),
+        "rejected_file": str(rejected_path.relative_to(PROJECT)),
         "status": "completed",
     }
 
-    print("Input rows:", original_rows)
-    print("Clean rows:", len(clean))
-    print("Rejected rows:", len(rejected))
-    print("Exact duplicate rows removed:", exact_duplicates_removed)
+    print(f"Clean rows: {len(clean)}")
+    print(f"Rejected rows: {len(rejected)}")
+    print(f"Clean output: {clean_path}")
+    print(f"Rejected output: {rejected_path}")
 
     return result
 
 
-    print("Input rows:", original_rows)
-    print("Clean rows:", len(clean))
-    print("Rejected rows:", len(rejected))
-    print("Exact duplicate rows removed:", exact_duplicates_removed)
-
-    return result
-
+# --------------------------------------------------
+# Pipeline entry point
+# --------------------------------------------------
 
 def main():
+    started_at = datetime.now(timezone.utc)
+
+    print("=" * 55)
+    print("PulseIQ ETL pipeline")
+    print("Started at:", started_at.isoformat())
+    print("=" * 55)
+
     results = []
 
     for table_name, rules in TABLES.items():
         try:
-            results.append(clean_table(table_name, rules))
+            result = clean_table(table_name, rules)
+
         except Exception as error:
             print(f"ERROR processing {table_name}: {error}")
-            results.append({
+
+            result = {
                 "table": table_name,
                 "status": "error",
                 "error": str(error),
-            })
+            }
 
-    report_path = REPORTS / "etl_quality_report.json"
+        results.append(result)
+
+    finished_at = datetime.now(timezone.utc)
+
+    input_rows = sum(
+        item.get("input_rows", 0)
+        for item in results
+    )
+
+    clean_rows = sum(
+        item.get("clean_rows", 0)
+        for item in results
+    )
+
+    rejected_rows = sum(
+        item.get("rejected_rows", 0)
+        for item in results
+    )
+
+    failed_tables = [
+        item["table"]
+        for item in results
+        if item.get("status") != "completed"
+    ]
+
+    report = {
+        "run_started_at": started_at.isoformat(),
+        "run_finished_at": finished_at.isoformat(),
+        "duration_seconds": round(
+            (finished_at - started_at).total_seconds(),
+            3,
+        ),
+        "status": "failed" if failed_tables else "completed",
+        "input_rows": input_rows,
+        "clean_rows": clean_rows,
+        "rejected_rows": rejected_rows,
+        "failed_tables": failed_tables,
+        "tables": results,
+    }
+
+    report_path = LOGS / "etl_quality_report.json"
+
     report_path.write_text(
-        json.dumps(results, indent=2, default=str),
-        encoding="utf-8"
+        json.dumps(report, indent=2, default=str),
+        encoding="utf-8",
     )
 
     print("\n" + "=" * 55)
     print("ETL RUN FINISHED")
+    print("Started:", started_at.isoformat())
+    print("Finished:", finished_at.isoformat())
+    print("Input rows:", input_rows)
+    print("Clean rows:", clean_rows)
+    print("Rejected rows:", rejected_rows)
+    print("Status:", report["status"])
     print("Quality report:", report_path)
-    print("Clean files:", OUTPUT)
-    print("Rejected files:", REJECTED)
+    print("=" * 55)
+
+    if failed_tables:
+        print("Failed tables:", ", ".join(failed_tables))
+        return 1
+
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

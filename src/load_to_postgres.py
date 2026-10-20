@@ -1,9 +1,9 @@
-
 from pathlib import Path
 import os
 
 import pandas as pd
 from sqlalchemy import create_engine, text
+from sqlalchemy.types import Date
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
@@ -23,18 +23,25 @@ DATA_FOLDER = Path("output/cleaned")
 
 DATE_COLUMNS = {
     "dim_employee": [
-        "date_of_birth", "hire_date", "exit_date",
-        "valid_from", "valid_to",
+        "date_of_birth",
+        "hire_date",
+        "exit_date",
+        "valid_from",
+        "valid_to",
     ],
     "fact_payroll": ["period_end_date"],
     "fact_attendance_monthly": ["period_end_date"],
     "fact_leave": [
-        "start_date", "end_date", "applied_on", "decided_on",
+        "start_date",
+        "end_date",
+        "applied_on",
+        "decided_on",
     ],
 }
 
 
 def main():
+    # Confirm that PostgreSQL is reachable.
     with engine.connect() as connection:
         connection.execute(text("SELECT 1"))
 
@@ -44,34 +51,88 @@ def main():
         file_path = DATA_FOLDER / filename
 
         if not file_path.exists():
-            raise FileNotFoundError(f"CSV file not found: {file_path}")
+            raise FileNotFoundError(
+                f"CSV file not found: {file_path}"
+            )
+
+        print(f"\nPreparing {table_name}...")
 
         df = pd.read_csv(file_path)
 
-        # Convert date strings into Python date objects.
+        # Validate that all expected date columns exist.
         for column in DATE_COLUMNS[table_name]:
-            df[column] = pd.to_datetime(
-                df[column], errors="coerce"
-            ).dt.date
+            if column not in df.columns:
+                raise ValueError(
+                    f"Missing column '{column}' in {file_path}"
+                )
 
-        # Convert missing values to SQL NULL.
+            # Convert dates to Python datetime.date objects.
+            parsed_dates = pd.to_datetime(
+                df[column],
+                errors="coerce",
+            )
+
+            # Avoid silently replacing invalid non-empty dates with NULL.
+            invalid_dates = (
+                df[column].notna()
+                & df[column].astype(str).str.strip().ne("")
+                & parsed_dates.isna()
+            )
+
+            if invalid_dates.any():
+                raise ValueError(
+                    f"{table_name}.{column} contains "
+                    f"{invalid_dates.sum()} invalid date values."
+                )
+
+            df[column] = parsed_dates.dt.date
+
+        # Convert pandas missing values into SQL NULL.
         df = df.astype(object).where(pd.notna(df), None)
 
-        # Each table's replacement is transactional.
-        # The table is cleared only when its new data can be loaded.
+        # Tell SQLAlchemy which CSV columns are SQL DATE fields.
+        column_types = {
+            column: Date()
+            for column in DATE_COLUMNS[table_name]
+        }
+
+        # Load into a staging table first.
+        staging_table = f"{table_name}_staging"
+
         with engine.begin() as connection:
-            connection.execute(text(f"TRUNCATE TABLE {table_name}"))
+            connection.execute(
+                text(f'DROP TABLE IF EXISTS "{staging_table}"')
+            )
 
             df.to_sql(
-                table_name,
+                staging_table,
                 con=connection,
-                if_exists="append",
+                if_exists="replace",
                 index=False,
                 chunksize=100,
+                dtype=column_types,
                 method=None,
             )
 
-        print(f"Loaded {len(df):,} rows into {table_name}.")
+            # Replace the target only after the staging load succeeds.
+            connection.execute(
+                text(f'TRUNCATE TABLE "{table_name}"')
+            )
+
+            connection.execute(
+                text(
+                    f'INSERT INTO "{table_name}" '
+                    f'SELECT * FROM "{staging_table}"'
+                )
+            )
+
+            connection.execute(
+                text(f'DROP TABLE "{staging_table}"')
+            )
+
+        print(
+            f"Loaded {len(df):,} rows into {table_name}."
+        )
 
     print("\nAll four CSV files loaded successfully.")
 

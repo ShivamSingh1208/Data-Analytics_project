@@ -51,7 +51,7 @@ def main():
             SUM(gross_pay) AS gross_pay,
             SUM(overtime_pay) AS overtime_pay,
             SUM(employer_cost) AS employer_cost
-        FROM fact_payroll
+        FROM dw.fact_payroll
         GROUP BY
             department_id,
             DATE_TRUNC('month', period_end_date)::date
