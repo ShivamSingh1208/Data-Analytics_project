@@ -41,17 +41,22 @@ def load_data():
                 FROM dw.metric_headcount_monthly
                 ORDER BY month_start
             """), conn)
-        employees = pd.read_sql(
+        work_modes = pd.read_sql(
             text("""
-                SELECT department_id, work_mode, work_location
-                FROM dw.dim_employee
-                WHERE is_current = 'Y'
-                  AND employment_status = 'Active'
+                SELECT work_mode, employee_count
+                FROM dw.metric_work_mode_distribution
+                ORDER BY employee_count DESC
             """), conn)
-    return payroll, attendance, headcount, employees
 
+        work_locations = pd.read_sql(
+            text("""
+                SELECT work_location, employee_count
+                FROM dw.metric_work_location_distribution
+                ORDER BY employee_count DESC
+            """), conn)
+        return payroll, attendance, headcount, work_modes, work_locations
 try:
-    payroll, attendance, headcount, employees = load_data()
+        payroll, attendance, headcount, work_modes, work_locations = load_data()
 except Exception as exc:
     st.error("Unable to load dashboard data. Check PostgreSQL and DATABASE_URL.")
     st.code(str(exc))
@@ -128,14 +133,20 @@ if not attendance_trend.empty:
     if pd.notna(last_att):
         st.write(f"**Insight:** The latest calculated attendance rate is {last_att:.1f}%.")
 
-st.subheader("Work mode distribution")
-if not employees.empty and "work_mode" in employees.columns:
-    mode_counts = employees["work_mode"].fillna("Unknown").value_counts()
-    st.bar_chart(mode_counts)
-    st.write(f"**Insight:** The largest work-mode group is {mode_counts.index[0]} ({int(mode_counts.iloc[0]):,} active employees).")
-else:
-    st.info("Work-mode breakdown is unavailable.")
 
+st.subheader("Work location distribution")
+
+if not work_locations.empty:
+    location_counts = work_locations.set_index("work_location")["employee_count"]
+    st.bar_chart(location_counts)
+
+    top_location = work_locations.iloc[0]
+    st.write(
+        f"**Insight:** {top_location['work_location']} is the largest "
+        f"work-location group, with {int(top_location['employee_count']):,} employees."
+    )
+else:
+    st.info("Work-location breakdown is unavailable.")
 st.subheader("Data notes")
 st.markdown("""
 - Department payroll groups with fewer than five paid employees are excluded from the payroll view.
