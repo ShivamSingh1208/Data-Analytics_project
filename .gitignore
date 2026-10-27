@@ -43,3 +43,6 @@ dashboard_export_*/
 # Temporary files
 *.tmp
 *.swp
+
+# Dedicated Python environment for PDF reports
+.report-venv/
