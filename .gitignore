@@ -46,3 +46,6 @@ dashboard_export_*/
 
 # Dedicated Python environment for PDF reports
 .report-venv/
+
+# Node.js dependencies
+node_modules/

@@ -177,8 +177,8 @@ story.append(P(
 story.append(P("Payroll reconciliation", "Section"))
 story.append(P(
     "The official reference covers 18 months. Four months differ after ETL "
-    "cleaning: May 2025 (₹61,813.15), December 2025 (₹98,327.42), February "
-    "2026 (₹154,811.89), and April 2026 (₹96,015.00) in employer cost. The "
+    "cleaning: May 2025 (INR 61,813.15), December 2025 (INR 98,327.42), February "
+    "2026 (INR 154,811.89), and April 2026 (INR 96,015.00) in employer cost. The "
     "May and February records include duplicate employee/run pairs. The "
     "December and April records have employee IDs not found in the employee "
     "dimension. Rejected rows remain excluded pending data-owner review."
@@ -186,12 +186,12 @@ story.append(P(
 
 story.append(P("Budget analysis", "Section"))
 story.append(P(
-    "The 198 department-month budget rows total ₹862,030,000.00. Cleaned payroll "
-    "employer cost totals ₹861,369,767.38, giving a net variance of −₹660,232.62 "
-    "(actual minus budget). Largest net overspends are Data & AI ₹992,768.20 "
-    "(0.90%), Customer Support ₹482,050.62 (1.01%), and Product & Design "
-    "₹453,539.93 (0.65%). Engineering had the largest net underspend at "
-    "₹2,054,508.87. Three department-month budget values matched the original CSV."
+    "The 198 department-month budget rows total INR 862,030,000.00. Cleaned payroll "
+    "employer cost totals INR 861,369,767.38, giving a net variance of −INR 660,232.62 "
+    "(actual minus budget). Largest net overspends are Data & AI INR 992,768.20 "
+    "(0.90%), Customer Support INR 482,050.62 (1.01%), and Product & Design "
+    "INR 453,539.93 (0.65%). Engineering had the largest net underspend at "
+    "INR 2,054,508.87. Three department-month budget values matched the original CSV."
 ))
 story.append(PageBreak())
 
@@ -200,7 +200,7 @@ story.append(P("Quality, Lessons and Next Steps", "ReportTitle"))
 
 story.append(P("Testing and quality controls", "Section"))
 story.append(P(
-    "<b>Automated tests:</b> 7 passed in 0.78 seconds using the existing "
+    "<b>Automated tests:</b> 7 passed using the existing "
     "ETL test suite. Tests cover reversed leave dates, date-key consistency, "
     "duplicate identifiers, negative payroll amounts and open-ended validity dates."
 ))
