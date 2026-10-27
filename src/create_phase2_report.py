@@ -77,7 +77,7 @@ meta = [
      P("github.com/ShivamSingh1208/Data-Analytics_project", "Cell")],
     [P("<b>Git branch</b>", "Cell"), P("main", "Cell")],
     [P("<b>Git tag</b>", "Cell"),
-     P("phase-2 — pending creation after final validation", "Cell")],
+     P("phase-2 — created and pushed to GitHub", "Cell")],
     [P("<b>Reporting period</b>", "Cell"),
      P("April 2025 – September 2026 for budget and KPI source data", "Cell")],
 ]
@@ -99,9 +99,9 @@ story.append(P(
     "leave metrics, attrition metrics and grouped risk summaries, productivity "
     "metrics, payroll reconciliation, and department payroll budget analysis. "
     "The work uses PostgreSQL tables and SQL views, Python loaders, source-data "
-    "checks, and manual comparisons. Seven existing automated ETL tests passed. "
-    "The report records verified results and flags remaining reconciliation and "
-    "KPI-target validation work rather than presenting it as complete."
+    "checks, and manual comparisons. Seven automated ETL tests passed. "
+    "The work includes KPI target comparisons, budget analysis, and documented "
+    "payroll reconciliation differences that remain pending data-owner review."
 ))
 
 story.append(P("Task status and evidence", "Section"))
@@ -117,10 +117,10 @@ task_rows = [
      "891 monthly department records and 430 risk predictions loaded. Group risk reporting suppresses groups under 10."),
     ("Productivity", "Implemented; verified",
      "16 teams, 38 sprints and 28,868 tasks loaded. Cancelled work excluded from key completion metrics."),
-    ("Payroll reconciliation", "Partial",
-     "18 months checked. May 2025 and Feb 2026 differ from official reference; discrepancies documented."),
-    ("Budget & KPI targets", "Partial",
-     "198 budget rows and 180 KPI target rows loaded. Three budget source checks passed; complete target comparisons remain."),
+    ("Payroll reconciliation", "Implemented; caveats documented",
+     "18 monthly reference checks completed. Four months differ from the official reference; rejected rows and reasons documented."),
+    ("Budget & KPI targets", "Implemented; validated with caveats",
+     "198 budget rows and 180 KPI target rows loaded. Budget source checks passed; KPI comparison view validated. Eighteen task targets are missing."),
 ]
 for a, b, c in task_rows:
     rows.append([P(a, "Cell"), P(b, "Cell"), P(c, "Cell")])
@@ -176,12 +176,12 @@ story.append(P(
 
 story.append(P("Payroll reconciliation", "Section"))
 story.append(P(
-    "The official reference covers 18 months. Sixteen months match the monthly "
-    "employer-cost and employee-count reference. May 2025 is short by one employee "
-    "and ₹61,813.15; February 2026 is short by one employee and ₹154,811.89. "
-    "Both differences match duplicate employee/run pairs rejected by ETL. Both "
-    "records in each pair were rejected, so the cleaned warehouse is short by "
-    "one employee in each month. No rejected record was restored without approval."
+    "The official reference covers 18 months. Four months differ after ETL "
+    "cleaning: May 2025 (₹61,813.15), December 2025 (₹98,327.42), February "
+    "2026 (₹154,811.89), and April 2026 (₹96,015.00) in employer cost. The "
+    "May and February records include duplicate employee/run pairs. The "
+    "December and April records have employee IDs not found in the employee "
+    "dimension. Rejected rows remain excluded pending data-owner review."
 ))
 
 story.append(P("Budget analysis", "Section"))
@@ -211,11 +211,14 @@ story.append(P(
     "across 10 departments and 18 months."
 ))
 story.append(P(
-    "<b>KPI target caveats:</b> 18 task-completion targets are NULL and must "
-    "remain missing. Attendance targets are stored as 0.94 and should be converted "
-    "to 94% for comparison with percentage-point attendance metrics. The units "
-    "for overtime targets must be confirmed before comparison. Actual-versus-target "
-    "performance comparisons are not yet complete."
+    "<b>KPI comparison results:</b> The view contains 180 department-month rows "
+    "across 10 departments and 18 months. Attendance met target in 106 rows, "
+    "overtime in 152, attrition in 121, and task completion in 136 of 162 rows "
+    "with an available target. Eighteen task-completion targets remain NULL. "
+    "Attendance target 0.94 was converted to 94%. Overtime share assumes "
+    "overtime hours divided by scheduled days multiplied by 8 hours; this "
+    "denominator needs confirmation. Recorded overtime is zero in 126 of 198 "
+    "attendance department-month rows, so overtime findings need source validation."
 ))
 
 story.append(P("Problems and resolutions", "Section"))
@@ -240,21 +243,21 @@ story.append(P(
 
 story.append(P("Next steps", "Section"))
 story.append(P(
-    "1. Confirm the authoritative payroll records with the data owner and resolve "
-    "the two monthly reconciliation differences through an approved process.<br/>"
-    "2. Confirm KPI target units and build actual-versus-target views for attendance, "
-    "overtime, attrition and task completion; keep missing task targets unavailable.<br/>"
-    "3. Capture fresh screenshots of Phase 2 analyses and attach evidence to the "
-    "repository.<br/>"
-    "4. Re-run automated and warehouse checks, review Git status, commit the Phase 2 "
-    "files, create the phase-2 tag, and push the branch and tag to GitHub."
+    "1. Confirm the four monthly payroll reconciliation differences with the data "
+    "owner and resolve them through an approved process.<br/>"
+    "2. Confirm the overtime-share denominator and investigate zero-overtime "
+    "source values.<br/>"
+    "3. Confirm rejected payroll rows with the data owner and keep missing task "
+    "targets unavailable rather than inventing values.<br/>"
+    "4. Capture fresh screenshots, regenerate and verify this PDF, rerun tests, "
+    "and commit and push the final report and KPI SQL changes to GitHub."
 ))
 
 story.append(Spacer(1, 8))
 story.append(P(
     "<b>Submission note:</b> This report reflects verified work as of 27 October "
-    "2026. The Phase 2 Git tag has not yet been created, and the final KPI target "
-    "comparisons and fresh Phase 2 screenshots remain outstanding."
+    "2026. The phase-2 Git tag has already been pushed. The KPI target "
+    "comparisons are available with documented caveats; fresh Phase 2 screenshots and publication of this updated report remain outstanding."
 ))
 
 doc.build(story, onFirstPage=footer, onLaterPages=footer)
