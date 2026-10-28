@@ -9,7 +9,7 @@ from reportlab.platypus import (
     PageBreak, KeepTogether
 )
 
-out = Path("PulseIQ HR Analytics Dashboard.pdf")
+out = Path("reports/DataAnalytics_Shivam_Kumar_Phase2_Report.pdf")
 out.parent.mkdir(parents=True, exist_ok=True)
 
 doc = SimpleDocTemplate(
