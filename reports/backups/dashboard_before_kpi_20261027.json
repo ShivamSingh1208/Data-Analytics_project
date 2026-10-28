@@ -1,0 +1,56 @@
+{
+  "dashboard_id": 1,
+  "title": "PulseIQ HR Analytics Dashboard",
+  "published": true,
+  "position_json": "{\"DASHBOARD_VERSION_KEY\": \"v2\", \"ROOT_ID\": {\"children\": [\"GRID_ID\"], \"id\": \"ROOT_ID\", \"type\": \"ROOT\"}, \"GRID_ID\": {\"children\": [\"ROW-PULSEIQ-1\", \"ROW-PULSEIQ-2\", \"ROW-PULSEIQ-3\"], \"id\": \"GRID_ID\", \"parents\": [\"ROOT_ID\"], \"type\": \"GRID\"}, \"HEADER_ID\": {\"id\": \"HEADER_ID\", \"meta\": {\"text\": \"PulseIQ HR Analytics Dashboard\"}, \"type\": \"HEADER\"}, \"ROW-PULSEIQ-1\": {\"children\": [\"CHART-PULSEIQ-1\", \"CHART-PULSEIQ-2\"], \"id\": \"ROW-PULSEIQ-1\", \"meta\": {\"0\": \"ROOT_ID\", \"background\": \"BACKGROUND_TRANSPARENT\"}, \"type\": \"ROW\", \"parents\": [\"ROOT_ID\", \"GRID_ID\"]}, \"CHART-PULSEIQ-1\": {\"children\": [], \"id\": \"CHART-PULSEIQ-1\", \"meta\": {\"chartId\": 1, \"height\": 50, \"sliceName\": \"PulseIQ - Monthly Payroll Cost\", \"uuid\": \"105e6834-558d-4f43-a3c0-02ee137e20e2\", \"width\": 6}, \"type\": \"CHART\", \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-PULSEIQ-1\"]}, \"CHART-PULSEIQ-2\": {\"children\": [], \"id\": \"CHART-PULSEIQ-2\", \"meta\": {\"chartId\": 2, \"height\": 50, \"sliceName\": \"PulseIQ - Attendance Rate Trend\", \"uuid\": \"426e90bd-7043-4d86-8b9d-5bbb44dbf02b\", \"width\": 6}, \"type\": \"CHART\", \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-PULSEIQ-1\"]}, \"ROW-PULSEIQ-2\": {\"children\": [\"CHART-PULSEIQ-3\", \"CHART-PULSEIQ-4\"], \"id\": \"ROW-PULSEIQ-2\", \"meta\": {\"0\": \"ROOT_ID\", \"background\": \"BACKGROUND_TRANSPARENT\"}, \"type\": \"ROW\", \"parents\": [\"ROOT_ID\", \"GRID_ID\"]}, \"CHART-PULSEIQ-3\": {\"children\": [], \"id\": \"CHART-PULSEIQ-3\", \"meta\": {\"chartId\": 3, \"height\": 50, \"sliceName\": \"PulseIQ - Monthly Attrition\", \"uuid\": \"21505df6-4e1b-43e7-b867-e179f276b1de\", \"width\": 6}, \"type\": \"CHART\", \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-PULSEIQ-2\"]}, \"CHART-PULSEIQ-4\": {\"children\": [], \"id\": \"CHART-PULSEIQ-4\", \"meta\": {\"chartId\": 4, \"height\": 50, \"sliceName\": \"PulseIQ - Department Payroll Budget Variance\", \"uuid\": \"69765f1b-c806-4748-aeb9-387b00f4adf6\", \"width\": 6}, \"type\": \"CHART\", \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-PULSEIQ-2\"]}, \"ROW-PULSEIQ-3\": {\"children\": [\"CHART-PULSEIQ-5\", \"CHART-PULSEIQ-6\"], \"id\": \"ROW-PULSEIQ-3\", \"meta\": {\"0\": \"ROOT_ID\", \"background\": \"BACKGROUND_TRANSPARENT\"}, \"type\": \"ROW\", \"parents\": [\"ROOT_ID\", \"GRID_ID\"]}, \"CHART-PULSEIQ-5\": {\"children\": [], \"id\": \"CHART-PULSEIQ-5\", \"meta\": {\"chartId\": 5, \"height\": 50, \"sliceName\": \"PulseIQ - Team Productivity\", \"uuid\": \"9f83a35d-e172-4813-b90f-f48f9b4de543\", \"width\": 6}, \"type\": \"CHART\", \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-PULSEIQ-3\"]}, \"CHART-PULSEIQ-6\": {\"children\": [], \"id\": \"CHART-PULSEIQ-6\", \"meta\": {\"chartId\": 6, \"height\": 50, \"sliceName\": \"PulseIQ - Leave Requests by Status\", \"uuid\": \"8b263945-3ce1-40f0-9d64-7ba3182a9e30\", \"width\": 6}, \"type\": \"CHART\", \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-PULSEIQ-3\"]}}",
+  "charts": [
+    {
+      "id": 1,
+      "name": "PulseIQ - Monthly Payroll Cost",
+      "viz_type": "line",
+      "datasource_id": 12,
+      "datasource_type": "table",
+      "params": "{\"datasource\": \"12__table\", \"viz_type\": \"line\", \"granularity_sqla\": \"month\", \"time_range\": \"No filter\", \"metrics\": [\"total_employer_cost\"], \"groupby\": [], \"adhoc_filters\": [], \"row_limit\": 1000, \"order_desc\": true, \"show_legend\": true, \"rich_tooltip\": true}"
+    },
+    {
+      "id": 2,
+      "name": "PulseIQ - Attendance Rate Trend",
+      "viz_type": "line",
+      "datasource_id": 2,
+      "datasource_type": "table",
+      "params": "{\"datasource\": \"2__table\", \"viz_type\": \"line\", \"metrics\": [\"average_attendance_rate\"], \"groupby\": [], \"adhoc_filters\": [], \"row_limit\": 1000, \"order_desc\": true, \"show_legend\": true, \"rich_tooltip\": true, \"granularity_sqla\": \"month_start\", \"time_range\": \"No filter\"}"
+    },
+    {
+      "id": 3,
+      "name": "PulseIQ - Monthly Attrition",
+      "viz_type": "line",
+      "datasource_id": 4,
+      "datasource_type": "table",
+      "params": "{\"datasource\": \"4__table\", \"viz_type\": \"line\", \"metrics\": [\"average_attrition_rate\"], \"groupby\": [], \"adhoc_filters\": [], \"row_limit\": 1000, \"order_desc\": true, \"show_legend\": true, \"rich_tooltip\": true, \"granularity_sqla\": \"month_start_date\", \"time_range\": \"No filter\"}"
+    },
+    {
+      "id": 4,
+      "name": "PulseIQ - Department Payroll Budget Variance",
+      "viz_type": "dist_bar",
+      "datasource_id": 11,
+      "datasource_type": "table",
+      "params": "{\"datasource\": \"11__table\", \"viz_type\": \"dist_bar\", \"metrics\": [\"total_payroll_variance\"], \"groupby\": [\"department_name\"], \"adhoc_filters\": [], \"row_limit\": 1000, \"order_desc\": true, \"show_legend\": true, \"rich_tooltip\": true}"
+    },
+    {
+      "id": 5,
+      "name": "PulseIQ - Team Productivity",
+      "viz_type": "dist_bar",
+      "datasource_id": 16,
+      "datasource_type": "table",
+      "params": "{\"datasource\": \"16__table\", \"viz_type\": \"dist_bar\", \"metrics\": [\"total_completed_tasks\"], \"groupby\": [\"team_name\"], \"adhoc_filters\": [], \"row_limit\": 1000, \"order_desc\": true, \"show_legend\": true, \"rich_tooltip\": true}"
+    },
+    {
+      "id": 6,
+      "name": "PulseIQ - Leave Requests by Status",
+      "viz_type": "dist_bar",
+      "datasource_id": 7,
+      "datasource_type": "table",
+      "params": "{\"datasource\": \"7__table\", \"viz_type\": \"dist_bar\", \"metrics\": [\"total_leave_requests\"], \"groupby\": [\"status\"], \"adhoc_filters\": [], \"row_limit\": 1000, \"order_desc\": true, \"show_legend\": true, \"rich_tooltip\": true}"
+    }
+  ]
+}
