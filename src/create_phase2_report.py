@@ -9,7 +9,7 @@ from reportlab.platypus import (
     PageBreak, KeepTogether
 )
 
-out = Path("reports/DataAnalytics_Shivam_Kumar_Phase2_Report.pdf")
+out = Path("PulseIQ HR Analytics Dashboard.pdf")
 out.parent.mkdir(parents=True, exist_ok=True)
 
 doc = SimpleDocTemplate(
@@ -255,9 +255,9 @@ story.append(P(
 
 story.append(Spacer(1, 8))
 story.append(P(
-    "<b>Submission note:</b> This report reflects verified work as of 27 October "
-    "2026. The phase-2 Git tag has already been pushed. The KPI target "
-    "comparisons are available with documented caveats; fresh Phase 2 screenshots and publication of this updated report remain outstanding."
+    "<b>Submission note:</b> This report reflects project validation completed through 28 October "
+    "2026. The phase-2 Git tag has been pushed. The KPI target "
+    "comparisons are available with documented caveats; the dashboard and KPI cards have been verified in Superset. Payroll reconciliation findings are documented separately, and unresolved differences remain disclosed for data-owner review."
 ))
 
 doc.build(story, onFirstPage=footer, onLaterPages=footer)
