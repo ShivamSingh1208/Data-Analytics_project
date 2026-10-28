@@ -1,0 +1,279 @@
+{
+  "dashboard_id": 1,
+  "dashboard_title": "PulseIQ HR Analytics Dashboard",
+  "position_json": {
+    "CHART-PULSEIQ-1": {
+      "children": [],
+      "id": "CHART-PULSEIQ-1",
+      "meta": {
+        "chartId": 1,
+        "height": 50,
+        "sliceName": "PulseIQ - Monthly Payroll Cost",
+        "uuid": "105e6834-558d-4f43-a3c0-02ee137e20e2",
+        "width": 6
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-PULSEIQ-1"
+      ],
+      "type": "CHART"
+    },
+    "CHART-PULSEIQ-2": {
+      "children": [],
+      "id": "CHART-PULSEIQ-2",
+      "meta": {
+        "chartId": 2,
+        "height": 50,
+        "sliceName": "PulseIQ - Attendance Rate Trend",
+        "uuid": "426e90bd-7043-4d86-8b9d-5bbb44dbf02b",
+        "width": 6
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-PULSEIQ-1"
+      ],
+      "type": "CHART"
+    },
+    "CHART-PULSEIQ-3": {
+      "children": [],
+      "id": "CHART-PULSEIQ-3",
+      "meta": {
+        "chartId": 3,
+        "height": 50,
+        "sliceName": "PulseIQ - Monthly Attrition",
+        "uuid": "21505df6-4e1b-43e7-b867-e179f276b1de",
+        "width": 6
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-PULSEIQ-2"
+      ],
+      "type": "CHART"
+    },
+    "CHART-PULSEIQ-4": {
+      "children": [],
+      "id": "CHART-PULSEIQ-4",
+      "meta": {
+        "chartId": 4,
+        "height": 50,
+        "sliceName": "PulseIQ - Department Payroll Budget Variance",
+        "uuid": "69765f1b-c806-4748-aeb9-387b00f4adf6",
+        "width": 6
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-PULSEIQ-2"
+      ],
+      "type": "CHART"
+    },
+    "CHART-PULSEIQ-5": {
+      "children": [],
+      "id": "CHART-PULSEIQ-5",
+      "meta": {
+        "chartId": 5,
+        "height": 50,
+        "sliceName": "PulseIQ - Team Productivity",
+        "uuid": "9f83a35d-e172-4813-b90f-f48f9b4de543",
+        "width": 6
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-PULSEIQ-3"
+      ],
+      "type": "CHART"
+    },
+    "CHART-PULSEIQ-6": {
+      "children": [],
+      "id": "CHART-PULSEIQ-6",
+      "meta": {
+        "chartId": 6,
+        "height": 50,
+        "sliceName": "PulseIQ - Leave Requests by Status",
+        "uuid": "8b263945-3ce1-40f0-9d64-7ba3182a9e30",
+        "width": 6
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-PULSEIQ-3"
+      ],
+      "type": "CHART"
+    },
+    "CHART-PULSEIQ-KPI-7": {
+      "children": [],
+      "id": "CHART-PULSEIQ-KPI-7",
+      "meta": {
+        "chartId": 7,
+        "height": 30,
+        "sliceName": "PulseIQ - Total Headcount KPI",
+        "uuid": "297b087a-77d0-4a56-b84c-25134104af49",
+        "width": 4
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-PULSEIQ-KPI"
+      ],
+      "type": "CHART"
+    },
+    "CHART-PULSEIQ-KPI-8": {
+      "children": [],
+      "id": "CHART-PULSEIQ-KPI-8",
+      "meta": {
+        "chartId": 8,
+        "height": 30,
+        "sliceName": "PulseIQ - Employer Cost KPI",
+        "uuid": "578672be-4838-4d76-923b-de2f17cc453a",
+        "width": 4
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-PULSEIQ-KPI"
+      ],
+      "type": "CHART"
+    },
+    "CHART-PULSEIQ-KPI-9": {
+      "children": [],
+      "id": "CHART-PULSEIQ-KPI-9",
+      "meta": {
+        "chartId": 9,
+        "height": 30,
+        "sliceName": "PulseIQ - Attendance Rate KPI",
+        "uuid": "4e20a62c-8e2f-41ad-b53b-38371198a67e",
+        "width": 4
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-PULSEIQ-KPI"
+      ],
+      "type": "CHART"
+    },
+    "DASHBOARD_VERSION_KEY": "v2",
+    "GRID_ID": {
+      "children": [
+        "ROW-PULSEIQ-KPI",
+        "ROW-PULSEIQ-1",
+        "ROW-PULSEIQ-2",
+        "ROW-PULSEIQ-3"
+      ],
+      "id": "GRID_ID",
+      "parents": [
+        "ROOT_ID"
+      ],
+      "type": "GRID"
+    },
+    "HEADER_ID": {
+      "id": "HEADER_ID",
+      "meta": {
+        "text": "PulseIQ HR Analytics Dashboard"
+      },
+      "type": "HEADER"
+    },
+    "ROOT_ID": {
+      "children": [
+        "GRID_ID",
+        "ROW-PULSEIQ-ATTENDANCE-TARGET"
+      ],
+      "id": "ROOT_ID",
+      "type": "ROOT"
+    },
+    "ROW-PULSEIQ-1": {
+      "children": [
+        "CHART-PULSEIQ-1",
+        "CHART-PULSEIQ-2"
+      ],
+      "id": "ROW-PULSEIQ-1",
+      "meta": {
+        "0": "ROOT_ID",
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID"
+      ],
+      "type": "ROW"
+    },
+    "ROW-PULSEIQ-2": {
+      "children": [
+        "CHART-PULSEIQ-3",
+        "CHART-PULSEIQ-4"
+      ],
+      "id": "ROW-PULSEIQ-2",
+      "meta": {
+        "0": "ROOT_ID",
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID"
+      ],
+      "type": "ROW"
+    },
+    "ROW-PULSEIQ-3": {
+      "children": [
+        "CHART-PULSEIQ-5",
+        "CHART-PULSEIQ-6"
+      ],
+      "id": "ROW-PULSEIQ-3",
+      "meta": {
+        "0": "ROOT_ID",
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID"
+      ],
+      "type": "ROW"
+    },
+    "ROW-PULSEIQ-KPI": {
+      "children": [
+        "CHART-PULSEIQ-KPI-7",
+        "CHART-PULSEIQ-KPI-8",
+        "CHART-PULSEIQ-KPI-9"
+      ],
+      "id": "ROW-PULSEIQ-KPI",
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID"
+      ],
+      "type": "ROW"
+    },
+    "CHART-PULSEIQ-47": {
+      "id": "CHART-PULSEIQ-47",
+      "type": "CHART",
+      "children": [],
+      "parents": [
+        "ROW-PULSEIQ-ATTENDANCE-TARGET"
+      ],
+      "meta": {
+        "chartId": 47,
+        "width": 12,
+        "height": 50
+      }
+    },
+    "ROW-PULSEIQ-ATTENDANCE-TARGET": {
+      "id": "ROW-PULSEIQ-ATTENDANCE-TARGET",
+      "type": "ROW",
+      "children": [
+        "CHART-PULSEIQ-47"
+      ],
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID"
+      ],
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT"
+      }
+    }
+  }
+}
