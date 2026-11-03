@@ -1,0 +1,411 @@
+{
+  "10": {
+    "title": "Receivables & Cash Dashboard",
+    "position_json": {
+      "DASHBOARD_VERSION_KEY": "v2",
+      "ROOT_ID": {
+        "id": "ROOT_ID",
+        "type": "ROOT",
+        "children": [
+          "GRID_ID"
+        ]
+      },
+      "GRID_ID": {
+        "id": "GRID_ID",
+        "type": "GRID",
+        "parents": [
+          "ROOT_ID"
+        ],
+        "children": [
+          "ROW-PH3-1",
+          "ROW-PH3-2"
+        ]
+      },
+      "HEADER_ID": {
+        "id": "HEADER_ID",
+        "type": "HEADER",
+        "meta": {
+          "text": "Receivables & Cash Dashboard"
+        }
+      },
+      "ROW-PH3-1": {
+        "id": "ROW-PH3-1",
+        "type": "ROW",
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID"
+        ],
+        "children": [
+          "CHART-PH3-65",
+          "CHART-PH3-66"
+        ]
+      },
+      "CHART-PH3-65": {
+        "id": "CHART-PH3-65",
+        "type": "CHART",
+        "children": [],
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID",
+          "ROW-PH3-1"
+        ],
+        "meta": {
+          "chartId": 65,
+          "sliceName": "Open Receivables by Ageing Bucket",
+          "uuid": "28273203-d0da-4446-8bb7-234f9c656531",
+          "width": 6,
+          "height": 50
+        }
+      },
+      "CHART-PH3-66": {
+        "id": "CHART-PH3-66",
+        "type": "CHART",
+        "children": [],
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID",
+          "ROW-PH3-1"
+        ],
+        "meta": {
+          "chartId": 66,
+          "sliceName": "Monthly Cash In, Out & Net Movement",
+          "uuid": "a033e0ea-1230-4c9b-a055-5c08658c7dd8",
+          "width": 6,
+          "height": 50
+        }
+      },
+      "ROW-PH3-2": {
+        "id": "ROW-PH3-2",
+        "type": "ROW",
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID"
+        ],
+        "children": [
+          "CHART-PH3-67"
+        ]
+      },
+      "CHART-PH3-67": {
+        "id": "CHART-PH3-67",
+        "type": "CHART",
+        "children": [],
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID",
+          "ROW-PH3-2"
+        ],
+        "meta": {
+          "chartId": 67,
+          "sliceName": "Client Average Days to Pay",
+          "uuid": "8dcda8ef-f170-4c66-b0c6-6455b5f89d70",
+          "width": 12,
+          "height": 50
+        }
+      }
+    }
+  },
+  "11": {
+    "title": "Department Performance Dashboard",
+    "position_json": {
+      "DASHBOARD_VERSION_KEY": "v2",
+      "ROOT_ID": {
+        "id": "ROOT_ID",
+        "type": "ROOT",
+        "children": [
+          "GRID_ID"
+        ]
+      },
+      "GRID_ID": {
+        "id": "GRID_ID",
+        "type": "GRID",
+        "parents": [
+          "ROOT_ID"
+        ],
+        "children": [
+          "ROW-PH3-1",
+          "ROW-PH3-2"
+        ]
+      },
+      "HEADER_ID": {
+        "id": "HEADER_ID",
+        "type": "HEADER",
+        "meta": {
+          "text": "Department Performance Dashboard"
+        }
+      },
+      "ROW-PH3-1": {
+        "id": "ROW-PH3-1",
+        "type": "ROW",
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID"
+        ],
+        "children": [
+          "CHART-PH3-68",
+          "CHART-PH3-69"
+        ]
+      },
+      "CHART-PH3-68": {
+        "id": "CHART-PH3-68",
+        "type": "CHART",
+        "children": [],
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID",
+          "ROW-PH3-1"
+        ],
+        "meta": {
+          "chartId": 68,
+          "sliceName": "Department Attendance Trend",
+          "uuid": "cdd44958-69de-4376-9941-be4acee5eaf7",
+          "width": 6,
+          "height": 50
+        }
+      },
+      "CHART-PH3-69": {
+        "id": "CHART-PH3-69",
+        "type": "CHART",
+        "children": [],
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID",
+          "ROW-PH3-1"
+        ],
+        "meta": {
+          "chartId": 69,
+          "sliceName": "Department Attrition Trend",
+          "uuid": "ec0580fa-70f3-4e0d-abe1-600b5b7769b0",
+          "width": 6,
+          "height": 50
+        }
+      },
+      "ROW-PH3-2": {
+        "id": "ROW-PH3-2",
+        "type": "ROW",
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID"
+        ],
+        "children": [
+          "CHART-PH3-70",
+          "CHART-PH3-71"
+        ]
+      },
+      "CHART-PH3-70": {
+        "id": "CHART-PH3-70",
+        "type": "CHART",
+        "children": [],
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID",
+          "ROW-PH3-2"
+        ],
+        "meta": {
+          "chartId": 70,
+          "sliceName": "Department Overtime Share Trend",
+          "uuid": "cc1d29ab-cf5c-44c7-858d-4df1d0b40318",
+          "width": 6,
+          "height": 50
+        }
+      },
+      "CHART-PH3-71": {
+        "id": "CHART-PH3-71",
+        "type": "CHART",
+        "children": [],
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID",
+          "ROW-PH3-2"
+        ],
+        "meta": {
+          "chartId": 71,
+          "sliceName": "Department Task Completion Trend",
+          "uuid": "7c816386-283c-42af-a7ca-6af6312c7477",
+          "width": 6,
+          "height": 50
+        }
+      }
+    }
+  },
+  "12": {
+    "title": "AI Insights & Forecast Dashboard",
+    "position_json": {
+      "DASHBOARD_VERSION_KEY": "v2",
+      "ROOT_ID": {
+        "id": "ROOT_ID",
+        "type": "ROOT",
+        "children": [
+          "GRID_ID"
+        ]
+      },
+      "GRID_ID": {
+        "id": "GRID_ID",
+        "type": "GRID",
+        "parents": [
+          "ROOT_ID"
+        ],
+        "children": [
+          "ROW-PH3-1",
+          "ROW-PH3-2"
+        ]
+      },
+      "HEADER_ID": {
+        "id": "HEADER_ID",
+        "type": "HEADER",
+        "meta": {
+          "text": "AI Insights & Forecast Dashboard"
+        }
+      },
+      "ROW-PH3-1": {
+        "id": "ROW-PH3-1",
+        "type": "ROW",
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID"
+        ],
+        "children": [
+          "CHART-PH3-72",
+          "CHART-PH3-73"
+        ]
+      },
+      "CHART-PH3-72": {
+        "id": "CHART-PH3-72",
+        "type": "CHART",
+        "children": [],
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID",
+          "ROW-PH3-1"
+        ],
+        "meta": {
+          "chartId": 72,
+          "sliceName": "Payroll Anomaly Counts by Reason",
+          "uuid": "8a2218d1-2279-46a5-8a25-93f67b90c6d1",
+          "width": 6,
+          "height": 50
+        }
+      },
+      "CHART-PH3-73": {
+        "id": "CHART-PH3-73",
+        "type": "CHART",
+        "children": [],
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID",
+          "ROW-PH3-1"
+        ],
+        "meta": {
+          "chartId": 73,
+          "sliceName": "Money at Risk by Anomaly Reason",
+          "uuid": "a95fd500-87a1-40a8-84a7-e5d20bd6e3f0",
+          "width": 6,
+          "height": 50
+        }
+      },
+      "ROW-PH3-2": {
+        "id": "ROW-PH3-2",
+        "type": "ROW",
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID"
+        ],
+        "children": [
+          "CHART-PH3-74",
+          "CHART-PH3-75"
+        ]
+      },
+      "CHART-PH3-74": {
+        "id": "CHART-PH3-74",
+        "type": "CHART",
+        "children": [],
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID",
+          "ROW-PH3-2"
+        ],
+        "meta": {
+          "chartId": 74,
+          "sliceName": "Forecast Headcount by Department",
+          "uuid": "9e7db10d-e791-4f1a-ac63-04c42975bb01",
+          "width": 6,
+          "height": 50
+        }
+      },
+      "CHART-PH3-75": {
+        "id": "CHART-PH3-75",
+        "type": "CHART",
+        "children": [],
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID",
+          "ROW-PH3-2"
+        ],
+        "meta": {
+          "chartId": 75,
+          "sliceName": "Forecast Attrition Rate",
+          "uuid": "28299a2a-5da7-4967-a25f-ee874162c92e",
+          "width": 6,
+          "height": 50
+        }
+      }
+    }
+  },
+  "13": {
+    "title": "Executive Scorecard Dashboard",
+    "position_json": {
+      "DASHBOARD_VERSION_KEY": "v2",
+      "ROOT_ID": {
+        "id": "ROOT_ID",
+        "type": "ROOT",
+        "children": [
+          "GRID_ID"
+        ]
+      },
+      "GRID_ID": {
+        "id": "GRID_ID",
+        "type": "GRID",
+        "parents": [
+          "ROOT_ID"
+        ],
+        "children": [
+          "ROW-PH3-1"
+        ]
+      },
+      "HEADER_ID": {
+        "id": "HEADER_ID",
+        "type": "HEADER",
+        "meta": {
+          "text": "Executive Scorecard Dashboard"
+        }
+      },
+      "ROW-PH3-1": {
+        "id": "ROW-PH3-1",
+        "type": "ROW",
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID"
+        ],
+        "children": [
+          "CHART-PH3-76"
+        ]
+      },
+      "CHART-PH3-76": {
+        "id": "CHART-PH3-76",
+        "type": "CHART",
+        "children": [],
+        "parents": [
+          "ROOT_ID",
+          "GRID_ID",
+          "ROW-PH3-1"
+        ],
+        "meta": {
+          "chartId": 76,
+          "sliceName": "Executive KPI Actuals and Targets",
+          "uuid": "cef0adb5-d639-4531-a498-ebc013cdc478",
+          "width": 12,
+          "height": 50
+        }
+      }
+    }
+  }
+}
