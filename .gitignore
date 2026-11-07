@@ -49,3 +49,7 @@ dashboard_export_*/
 
 # Node.js dependencies
 node_modules/
+
+# Phase 1 local source datasets (keep out of Git)
+/phase-1/ data/*.csv
+/phase-1/ data/data.py

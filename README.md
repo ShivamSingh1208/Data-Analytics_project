@@ -1,210 +1,168 @@
-# PulseIQ HR Analytics
+# PulseIQ — End-to-End Business Analytics Platform
 
-An end-to-end HR analytics project that transforms employee, payroll,
-attendance, and leave data into validated datasets and interactive
-business intelligence dashboards.
+PulseIQ is an end-to-end analytics project demonstrating how raw business data can be transformed into reliable datasets, business metrics, and interactive dashboards.
+
+The project uses Python, Pandas, Pandera, SQL, PostgreSQL, Docker, and Apache Superset.
 
 ## Project Overview
 
-PulseIQ demonstrates a data analytics workflow using Python, Pandas,
-Pandera, PostgreSQL, SQL, Docker, and Apache Superset.
+PulseIQ is organized into three phases, covering data engineering, analytics, and business intelligence.
 
-The pipeline focuses on data cleaning, validation, traceability,
-monthly HR metrics, and dashboard reporting.
+### Phase 1 — Data Foundation and ETL
 
-## Architecture
+Focus: Data ingestion, cleaning, validation, and database preparation.
 
-CSV Source Data
-      |
-      v
-Python ETL Pipeline
-(Pandas + Pandera)
-      |
-      v
-Data Quality Validation
-      |
-      +----> Rejected Records and Quality Reports
-      |
-      v
-PostgreSQL Data Warehouse
-      |
-      v
-SQL Metric Views
-      |
-      v
-Apache Superset Dashboard
+Key technologies:
+- Python and Pandas
+- Pandera data validation
+- PostgreSQL
+- SQL
+- Docker
+
+[Explore Phase 1](phase-1/README.md)
+
+### Phase 2 — HR Analytics and Dashboards
+
+Focus: Workforce analytics, payroll, attendance, attrition, productivity, and budget analysis.
+
+Key deliverables:
+- HR analytics metrics
+- Department-level analysis
+- Payroll and budget reconciliation
+- Interactive Apache Superset dashboard
+- Analytics report and supporting evidence
+
+[Explore Phase 2](phase-2/README.md)
+
+### Phase 3 — Business Analytics and Advanced Insights
+
+Focus: Financial analysis, receivables, departmental performance, AI-driven signals, and business scorecards.
+
+Key deliverables:
+- Profit and loss analysis
+- Expense analytics
+- Receivables and cash analysis
+- Department performance insights
+- AI-related analytical findings
+- Business scorecard and final report
+
+[Explore Phase 3](phase-3/README.md)
 
 ## Technology Stack
 
-- Python and Pandas for data processing
-- Pandera for data validation
-- PostgreSQL for warehouse storage
-- SQL for metric calculations and reporting
-- Docker Compose for running services
-- Apache Superset for interactive dashboards
-- Pytest for automated testing
+| Area | Technologies |
+|---|---|
+| Programming | Python |
+| Data processing | Pandas |
+| Data validation | Pandera |
+| Database | PostgreSQL |
+| Query language | SQL |
+| Data visualization | Apache Superset |
+| Containers | Docker and Docker Compose |
+| Reporting | Python and ReportLab |
+| Version control | Git and GitHub |
 
-## Project Structure
+## Repository Structure
 
-    GrowmarProject/
-    ├── data/                 # Local source datasets
-    ├── dashboards/           # Dashboard preparation scripts
-    ├── docs/                 # Documentation and screenshots
-    ├── reports/              # Data-quality and validation findings
-    ├── sql/                  # Schema, metric views, and quality checks
-    ├── src/                  # ETL and warehouse scripts
-    ├── test/                 # Automated tests
-    ├── output/               # Generated cleaned/rejected data
-    ├── logs/                 # ETL quality logs
-    ├── Dockerfile
-    ├── docker-compose.yml
-    ├── requirements.txt
-    └── README.md
+```text
+PulseIQ/
+├── README.md
+├── phase-1/
+│   └── README.md
+├── phase-2/
+│   └── README.md
+├── phase-3/
+│   └── README.md
+├── src/
+├── sql/
+├── test/
+├── reports/
+├── " data"/  # Local source CSVs (not tracked by Git)
+├── docker-compose.yml
+└── other project configuration files
+```
 
-## Dashboard
+The phase directories contain organized copies of the project documentation, scripts, SQL files, reports, and supporting evidence. The original project files remain in the repository root.
 
-The PulseIQ HR Analytics dashboard includes:
+## Dashboard and Reports
 
-- Total headcount
-- Employer cost
-- Attendance rate
-- Monthly exits
-- Monthly headcount trend
-- Monthly payroll trend
-- Monthly attendance trend
+The project includes an interactive Apache Superset dashboard and phase-wise analytical reports.
 
-Dashboard screenshot: `docs/screenshots/pulseiq_dashboard.png`
+The dashboard presents workforce, payroll, attendance, attrition, budget, productivity, and leave-related insights.
 
-The dashboard runs locally through Apache Superset at:
+## Data and Reproducibility
 
-`http://localhost:8088`
+The project uses structured CSV source data and a PostgreSQL database.
 
-## Data Quality and ETL
+Source CSV datasets are excluded from Git and are kept locally in the ` data/` directory (the directory name begins with a space). A fresh ETL run requires these source files and the correct local configuration.
 
-The ETL workflow includes:
+## Prerequisites and Local Setup
 
-- Reading source datasets
-- Cleaning and standardizing data
-- Validating data using configured rules
-- Separating accepted and rejected records
-- Generating quality reports and processing logs
-- Preparing data for downstream warehouse metrics
+- Docker Desktop with Docker Compose
+- Git
+- Python and the project dependencies
 
-The current validation run processed 19,734 input rows:
-19,722 clean rows and 12 rejected rows, with no failed tables.
+From the repository root, start the configured services:
 
-Rejected records should be investigated rather than silently discarded.
+```bash
+docker compose up -d --build
+```
 
-## Warehouse and Metrics
+Open Apache Superset at `http://localhost:8088`.
 
-PostgreSQL contains the `dw` schema and SQL-based metric views for
-monthly HR reporting.
+For a local test run, activate the project Python environment and run:
 
-The latest validated common reporting month is September 2026:
+```bash
+python -m pytest -v test/
+```
+
+A fresh installation may require database initialization and dashboard setup. Starting the containers alone does not recreate the existing local database or Superset configuration.
+
+## Data Quality Results
+
+The recorded ETL validation run processed:
+
+| Result | Records |
+|---|---:|
+| Input rows | 19,734 |
+| Clean rows | 19,722 |
+| Rejected rows | 12 |
+
+Rejected records are reported for investigation rather than silently discarded. The recorded automated test run passed all 7 tests.
+
+The verified September 2026 dashboard KPIs are:
 
 | Metric | Value |
 |---|---:|
-| Total headcount | 452 |
+| Total headcount | 441 |
 | Employer cost | 55,519,621.87 |
-| Monthly exits | 3 |
-| Attendance rate | 95.00% |
-| Monthly attrition | 0.68% |
+| Attendance rate | 95.19% |
 
-Employer cost is expressed in the source dataset's currency units.
-These figures describe the current project dataset and are not
-claims about a real company's workforce.
-
-Headcount data extends through October 2026, while payroll and
-attendance data currently extend through September 2026.
-
-## Prerequisites
-
-- Docker Desktop
-- Docker Compose
-- Git
-- Python 3.10 or a compatible project environment for local tests
-
-## Setup
-
-1. Clone the repository:
-
-   `git clone git@github.com:ShivamSingh1208/Data-Analytics_project.git`
-
-2. Enter the project directory:
-
-   `cd Data-Analytics_project`
-
-3. Create a local environment file using the template:
-
-   `cp .env.example .env`
-
-4. Edit `.env` and set strong local passwords and a unique secret key.
-   Never commit `.env` or share its contents.
-
-5. Review `docker-compose.yml` and ensure the expected source CSV files
-   are available in the local `data/` directory.
-
-6. Start the services:
-
-   `docker compose up -d --build`
-
-7. Open Superset:
-
-   `http://localhost:8088`
-
-Follow the repository's deployment and database initialization steps
-if this is a fresh installation. Do not assume the existing local
-database or dashboard configuration is automatically recreated
-by starting the containers.
-
-## Run Tests
-
-With the project Python environment activated:
-
-`python -m pytest -v test/`
-
-The latest recorded test run passed all 7 tests.
-
-## Useful Commands
-
-Check running containers:
-
-`docker compose ps`
-
-Run ETL through the configured service:
-
-`docker compose run --rm etl`
-
-Connect to PostgreSQL:
-
-`docker compose exec postgres psql -U pulseiq -d pulseiq`
-
-Stop services:
-
-`docker compose down`
-
-Persistent database data is stored in a Docker volume. Do not remove
-volumes unless you intentionally want to delete their stored data.
+These figures describe the project's dataset, not a real company's workforce.
 
 ## Security and Data Handling
 
 - Keep `.env`, passwords, API keys, and private credentials out of Git.
-- `.env.example` contains placeholders, not production credentials.
-- Source CSV files are excluded from Git by default.
-- Confirm you have permission to publish any dataset or screenshot.
+- Use `.env.example` for configuration placeholders.
+- Source CSV datasets are excluded from Git.
+- Confirm permission before publishing datasets or screenshots.
 - Review staged files before committing or pushing.
 
-## Future Improvements
+## Learning Outcomes
 
-- Add automated ETL scheduling and monitoring.
-- Add continuous integration for tests and data-quality checks.
-- Document fresh-install dashboard and database initialization.
-- Add more HR metrics and dashboard filters.
-- Add reproducible sample data for portfolio demonstrations.
+- Building data pipelines using Python
+- Cleaning and validating business data
+- Designing relational database structures
+- Writing analytical SQL queries
+- Creating business intelligence dashboards
+- Performing financial and workforce analysis
+- Documenting analytical findings
+- Organizing a multi-phase analytics project
 
-## Author
+## Repository
 
-Shivam Kumar
+GitHub: https://github.com/ShivamSingh1208/Data-Analytics_project
 
-GitHub: https://github.com/ShivamSingh1208
-LinkedIn: https://linkedin.com/in/shivam-kumar-6973a3352
+---
+
+PulseIQ — From raw data to actionable business insights.
