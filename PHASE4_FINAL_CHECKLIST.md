@@ -55,8 +55,10 @@ Release status: Local validation / Release Candidate 1
 - [x] Initial RC1 tag created (phase-4-rc1)
 - [x] Latest full local project suite: 45 tests passed
 - [x] Python compilation passed
-- [ ] Clean-environment validation of latest local operations changes
+- [x] Clean-environment validation of latest local operations changes
 
+
+- Clean-environment evidence: fresh Python 3.12 environment, all 73 locked dependencies installed, pip check passed, 47 tests passed, compilation and report-builder CLI passed, both local operations scripts passed zsh syntax validation, and both LaunchAgent plists passed validation. Backup/report jobs were not re-executed in the temporary environment.
 ## Release limitations
 - No public production deployment.
 - No verified SSO/OIDC authentication.
