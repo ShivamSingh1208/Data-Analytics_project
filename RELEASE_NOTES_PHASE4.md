@@ -7,17 +7,32 @@ Release status: Local validation / Release Candidate 1
 
 ### Task 16 — Monthly reporting
 - PDF and Excel monthly report generation.
-- September 2026 report generated.
+- September 2026 report generated and checked.
 - PDF: 3 pages.
-- Excel: Cover, pnl, expenses, vendors, departments, scorecard.
+- Excel worksheets: Cover, pnl, expenses, vendors, departments, scorecard.
 - P&L arithmetic and report month consistency validated.
+- Monthly job checks for P&L data before generating files.
+- Months without P&L data are skipped instead of producing empty reports.
+
+### Task 17 — Local operations
+- PostgreSQL host port 5434 restricted to 127.0.0.1.
+- Superset host port 8088 restricted to 127.0.0.1.
+- Local PostgreSQL custom-format backup script created.
+- Backup archive verified using pg_restore --list.
+- Restore test completed in a temporary database.
+- Restore test verified 27 warehouse base tables, 1,606 employees and 7,338 payroll rows.
+- Temporary restore database removed after verification.
+- Daily PostgreSQL backup LaunchAgent configured for 02:30.
+- Monthly report LaunchAgent configured for day 5 at 09:00.
+- Backup retention policy: 14 days.
+- Local operations instructions documented in docs/LOCAL_OPERATIONS.md.
 
 ### Task 18 — Self-service explorer
 - Streamlit aggregate KPI explorer prototype.
 - Role-based metric selection for demonstration.
 - Month selection and department-level metric display.
 - Small-group suppression based on department headcount.
-- Four demonstration roles tested across all 19 permitted role-metric combinations.
+- Four demonstration roles tested across 19 permitted role-metric combinations.
 - Manager restricted to D01 in local testing; D00 suppressed.
 - Streamlit browser smoke test passed locally.
 - Automated role-policy and privacy tests added.
@@ -33,17 +48,17 @@ Release status: Local validation / Release Candidate 1
 - Month filtering, row limits and input validation.
 
 ## Validation results
-
-- 12 Phase 4 API pytest tests passed.
-- Latest full local project suite: 41 tests passed.
-- Latest Python compilation check passed.
-- Initial clean Python 3.12 validation: 26 tests passed.
-- Earlier local baseline before role-policy tests: 32 passed; the latest complete suite is 41 passed.
-- All five metric endpoints returned September 2026 data.
-- Unknown metric returned HTTP 404.
-- Invalid limit and month returned HTTP 422.
-- Excel report worksheets and row counts verified.
-- PDF page count and key report content verified.
+- 12 Phase 4 API tests passed.
+- Latest full local project suite: 45 tests passed.
+- Python compilation passed for explorer, phase4, src and tests.
+- Backup archive integrity verified.
+- Temporary database restore test passed.
+- Restored warehouse counts verified.
+- September 2026 PDF and Excel report generation passed.
+- October 2026 report correctly skipped because no P&L data was available.
+- Local backup and monthly report LaunchAgents loaded.
+- Local API and Explorer previously returned HTTP 200.
+- Superset login endpoint returned its expected HTTP 302 redirect.
 
 ## September 2026 P&L
 
@@ -55,26 +70,13 @@ Release status: Local validation / Release Candidate 1
 | Profit margin | 18.59% |
 
 ## Known limitations
-
 - No public production deployment.
 - No verified SSO/OIDC authentication.
 - Explorer role environment variables are demonstration controls, not security.
 - Department-level suppression does not prevent all differencing attacks; adversarial testing and a robust disclosure-control design remain outstanding.
 - Scheduled GitHub workflow has not been verified with configured secrets.
-- Clean-machine installation validation passed: 26 tests passed, Python compilation succeeded, and pip reported no broken requirements. Deployment tests remain outstanding.
-- Browser operation and local role behavior were verified for Admin, HR, Manager and Executive roles.
-- Nineteen role-metric combinations passed local AppTest checks.
-- Small-group suppression unit tests: 6 passed.
+- Local LaunchAgents require the Mac user session and Docker Desktop to be available.
+- Clean-environment validation of the latest local operations changes remains outstanding.
 
 ## Release recommendation
-
-Keep this release local and private until authentication,
-authorization, privacy, database access, hosting and scheduled
-refresh controls have been verified.
-
-
-## Latest local validation
-
-- 41 tests passed in the latest full local project suite.
-- Python compilation passed for explorer, phase4, src, and tests.
-- Role-policy tests: 9 passed; privacy tests: 6 passed.
+Keep this release local and private until authentication, authorization, privacy, database access, hosting and scheduled refresh controls have been verified.

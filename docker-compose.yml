@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-pulseiq}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     ports:
-      - "5434:5432"
+      - "127.0.0.1:5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
@@ -34,7 +34,7 @@ services:
   superset:
     image: apache/superset:4.1.1
     ports:
-      - "8088:8088"
+      - "127.0.0.1:8088:8088"
     environment:
       SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:?Set SUPERSET_SECRET_KEY in .env}
       SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:?Set SUPERSET_ADMIN_PASSWORD in .env}
