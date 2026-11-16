@@ -67,3 +67,43 @@ def test_missing_group_size_column_is_rejected():
         suppress_small_groups(
             pd.DataFrame({"department_id": ["D01"]}), 5
         )
+
+
+
+def test_non_numeric_group_sizes_are_suppressed():
+    data = pd.DataFrame({
+        "department_id": ["D01", "D02", "D03"],
+        "group_size": ["unknown", "5", "3"],
+        "metric_value": [10, 20, 30],
+    })
+
+    visible, hidden = suppress_small_groups(data, 5)
+
+    assert visible["department_id"].tolist() == ["D02"]
+    assert hidden == 2
+
+
+def test_group_exactly_at_threshold_is_visible():
+    data = pd.DataFrame({
+        "department_id": ["D01", "D02"],
+        "group_size": [4, 5],
+    })
+
+    visible, hidden = suppress_small_groups(data, 5)
+
+    assert visible["department_id"].tolist() == ["D02"]
+    assert hidden == 1
+
+
+def test_non_integer_threshold_is_rejected():
+    data = pd.DataFrame({"group_size": [5]})
+
+    with pytest.raises(ValueError):
+        suppress_small_groups(data, 2.5)
+
+
+def test_boolean_threshold_is_rejected():
+    data = pd.DataFrame({"group_size": [5]})
+
+    with pytest.raises(ValueError):
+        suppress_small_groups(data, True)

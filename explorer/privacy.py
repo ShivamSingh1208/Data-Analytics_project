@@ -2,8 +2,8 @@ import pandas as pd
 
 
 def suppress_small_groups(data: pd.DataFrame, minimum: int):
-    if minimum < 1:
-        raise ValueError("Minimum group size must be at least 1.")
+    if isinstance(minimum, bool) or not isinstance(minimum, int) or minimum < 1:
+        raise ValueError("Minimum group size must be a positive integer.")
 
     if "group_size" not in data.columns:
         raise ValueError("Missing required group_size column.")
