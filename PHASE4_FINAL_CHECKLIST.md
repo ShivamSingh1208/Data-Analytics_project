@@ -33,6 +33,7 @@ Release status: Local validation / Release Candidate 1
 - [x] Browser KPI behavior verified across Admin, HR, Manager, and Executive roles
 - [x] Small-group suppression logic and browser behavior verified locally
 - [x] Small-group privacy unit tests and 19 role-metric combinations passed
+- [x] Explorer historical month selector disabled; latest-month-only regression tests passed (2 tests)
 - [ ] Differencing-attack protection and adversarial privacy tests
 - [ ] Production identity integration
 

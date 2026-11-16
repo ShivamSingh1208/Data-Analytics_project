@@ -1,5 +1,4 @@
 import os
-from datetime import date
 
 import pandas as pd
 import streamlit as st
@@ -57,14 +56,11 @@ try:
 
         st.caption(f"Latest warehouse month: {cutoff}")
 
-        selected_month = st.date_input(
-            "Reporting month",
-            value=cutoff,
-            min_value=date(2020, 1, 1),
-            max_value=cutoff,
-        )
-
-        params = {"month": selected_month}
+        # Fixed to the latest warehouse snapshot. Do not expose a
+        # historical month selector: repeated month comparisons can
+        # enable differencing of small changes in department metrics.
+        selected_month = cutoff
+        params = {"month": cutoff}
 
         where = "WHERE month = :month"
 
@@ -108,7 +104,8 @@ try:
     st.subheader(f"{metric} — {selected_month}")
 
     st.caption(
-        "Department-level values are displayed directly. "
+        "Latest reporting month only. Historical month comparisons are "
+        "disabled in this demonstration to reduce differencing risk. "
         "Percentages are not added across departments."
     )
 
