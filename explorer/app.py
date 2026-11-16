@@ -4,6 +4,8 @@ from datetime import date
 import pandas as pd
 import streamlit as st
 from sqlalchemy import create_engine, text
+from privacy import suppress_small_groups
+from access import METRIC_COLUMNS, get_allowed_metrics
 
 st.set_page_config(
     page_title="PulseIQ KPI Explorer",
@@ -33,48 +35,10 @@ if role == "MANAGER" and not dept:
     st.error("Manager department mapping is missing.")
     st.stop()
 
-allowed = {
-    "ADMIN": [
-        "Headcount",
-        "Attendance",
-        "Attrition",
-        "Employer cost",
-        "Overtime",
-        "Task completion",
-    ],
-    "HR": [
-        "Headcount",
-        "Attendance",
-        "Attrition",
-        "Task completion",
-    ],
-    "EXECUTIVE": [
-        "Headcount",
-        "Attendance",
-        "Attrition",
-        "Employer cost",
-        "Overtime",
-        "Task completion",
-    ],
-    "MANAGER": [
-        "Headcount",
-        "Attendance",
-        "Task completion",
-    ],
-}
+metric = st.selectbox("Metric", list(get_allowed_metrics(role)))
 
-metric_columns = {
-    "Headcount": ("headcount_end", 5, "Employees"),
-    "Attendance": ("attendance_rate_pct", 5, "%"),
-    "Attrition": ("attrition_rate_pct", 10, "%"),
-    "Employer cost": ("employer_cost", 5, "Currency"),
-    "Overtime": ("overtime_share_pct", 5, "%"),
-    "Task completion": ("task_completion_pct", 5, "%"),
-}
+column, minimum, unit = METRIC_COLUMNS[metric]
 
-metric = st.selectbox("Metric", allowed[role])
-
-column, minimum, unit = metric_columns[metric]
 
 engine = create_engine(url, pool_pre_ping=True)
 
@@ -112,7 +76,7 @@ try:
             SELECT
                 department_id,
                 "{column}" AS metric_value,
-                COALESCE(employees_paid, headcount_end, 0) AS group_size
+                COALESCE(headcount_end, 0) AS group_size
             FROM dw.metric_phase3_department_month
             {where}
             ORDER BY department_id
@@ -129,8 +93,7 @@ try:
         st.stop()
 
     # Suppress small groups before displaying department metrics.
-    safe = df[df["group_size"] >= minimum].copy()
-    hidden = len(df) - len(safe)
+    safe, hidden = suppress_small_groups(df, minimum)
 
     if hidden:
         st.warning(
@@ -151,7 +114,7 @@ try:
 
     st.dataframe(
         safe[["department_id", "metric_value"]],
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 

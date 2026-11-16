@@ -16,8 +16,12 @@ Release status: Local validation / Release Candidate 1
 - Streamlit aggregate KPI explorer prototype.
 - Role-based metric selection for demonstration.
 - Month selection and department-level metric display.
-- Small-group suppression logic included.
-- Production authentication and privacy verification remain outstanding.
+- Small-group suppression based on department headcount.
+- Four demonstration roles tested across all 19 permitted role-metric combinations.
+- Manager restricted to D01 in local testing; D00 suppressed.
+- Streamlit browser smoke test passed locally.
+- Automated role-policy and privacy tests added.
+- Production authentication and differencing-attack protection remain outstanding.
 
 ### Task 19 — Metrics API
 - FastAPI health endpoint.
@@ -30,8 +34,11 @@ Release status: Local validation / Release Candidate 1
 
 ## Validation results
 
-- 12 Phase 4 automated pytest tests passed.
-- 26 total project tests passed in a clean Python 3.12 environment.
+- 12 Phase 4 API pytest tests passed.
+- Latest full local project suite: 41 tests passed.
+- Latest Python compilation check passed.
+- Initial clean Python 3.12 validation: 26 tests passed.
+- Earlier local baseline before role-policy tests: 32 passed; the latest complete suite is 41 passed.
 - All five metric endpoints returned September 2026 data.
 - Unknown metric returned HTTP 404.
 - Invalid limit and month returned HTTP 422.
@@ -52,13 +59,22 @@ Release status: Local validation / Release Candidate 1
 - No public production deployment.
 - No verified SSO/OIDC authentication.
 - Explorer role environment variables are demonstration controls, not security.
-- Department-level privacy suppression needs adversarial testing.
+- Department-level suppression does not prevent all differencing attacks; adversarial testing and a robust disclosure-control design remain outstanding.
 - Scheduled GitHub workflow has not been verified with configured secrets.
 - Clean-machine installation validation passed: 26 tests passed, Python compilation succeeded, and pip reported no broken requirements. Deployment tests remain outstanding.
-- Browser KPI behavior was verified for Admin, HR, Manager and Executive roles.
+- Browser operation and local role behavior were verified for Admin, HR, Manager and Executive roles.
+- Nineteen role-metric combinations passed local AppTest checks.
+- Small-group suppression unit tests: 6 passed.
 
 ## Release recommendation
 
 Keep this release local and private until authentication,
 authorization, privacy, database access, hosting and scheduled
 refresh controls have been verified.
+
+
+## Latest local validation
+
+- 41 tests passed in the latest full local project suite.
+- Python compilation passed for explorer, phase4, src, and tests.
+- Role-policy tests: 9 passed; privacy tests: 6 passed.
