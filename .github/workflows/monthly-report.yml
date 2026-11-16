@@ -1,0 +1,66 @@
+name: PulseIQ monthly report
+
+on:
+  workflow_dispatch:
+    inputs:
+      month:
+        description: Reporting month YYYY-MM
+        required: true
+        default: "2026-09"
+  schedule:
+    - cron: "30 3 5 * *"
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Select reporting month
+        id: reporting-period
+        env:
+          REQUESTED_MONTH: ${{ inputs.month }}
+          EVENT_NAME: ${{ github.event_name }}
+        shell: bash
+        run: |
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            REPORT_MONTH="$REQUESTED_MONTH"
+          else
+            REPORT_MONTH="$(date -u -d "$(date -u +%Y-%m-01) -1 month" +%Y-%m)"
+          fi
+
+          if [[ ! "$REPORT_MONTH" =~ ^[0-9]{4}-(0[1-9]|1[0-2])$ ]]; then
+            echo "Invalid reporting month: $REPORT_MONTH"
+            exit 1
+          fi
+
+          echo "month=$REPORT_MONTH" >> "$GITHUB_OUTPUT"
+          echo "Selected reporting month: $REPORT_MONTH"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-phase4.txt
+
+      - name: Build monthly reports
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          python phase4/build_report.py \
+            --month "${{ steps.reporting-period.outputs.month }}" \
+            --format both
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: pulseiq-monthly-report-${{ steps.reporting-period.outputs.month }}
+          path: reports/monthly/*
+          if-no-files-found: error
+          retention-days: 90
