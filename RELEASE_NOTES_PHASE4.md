@@ -30,7 +30,8 @@ Release status: Local validation / Release Candidate 1
 
 ## Validation results
 
-- 12 automated pytest tests passed.
+- 12 Phase 4 automated pytest tests passed.
+- 26 total project tests passed in a clean Python 3.12 environment.
 - All five metric endpoints returned September 2026 data.
 - Unknown metric returned HTTP 404.
 - Invalid limit and month returned HTTP 422.
@@ -53,8 +54,8 @@ Release status: Local validation / Release Candidate 1
 - Explorer role environment variables are demonstration controls, not security.
 - Department-level privacy suppression needs adversarial testing.
 - Scheduled GitHub workflow has not been verified with configured secrets.
-- Clean-machine installation and deployment tests remain outstanding.
-- Explorer browser behavior still requires manual verification.
+- Clean-machine installation validation passed: 26 tests passed, Python compilation succeeded, and pip reported no broken requirements. Deployment tests remain outstanding.
+- Browser KPI behavior was verified for Admin, HR, Manager and Executive roles.
 
 ## Release recommendation
 

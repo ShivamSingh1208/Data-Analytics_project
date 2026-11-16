@@ -7,3 +7,4 @@ fastapi==0.121.0
 uvicorn[standard]==0.38.0
 streamlit==1.51.0
 pytest==8.4.2
+pypdf==6.21.2

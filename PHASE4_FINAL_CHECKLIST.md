@@ -19,7 +19,7 @@
 - [x] Streamlit application compiles
 - [x] Local server responds HTTP 200
 - [x] Role-based prototype implemented
-- [ ] Browser KPI behavior verified
+- [x] Browser KPI behavior verified across Admin, HR, Manager, and Executive roles
 - [ ] Small-group suppression verified in browser
 - [ ] Privacy and differencing tests completed
 - [ ] Production identity integration
@@ -38,5 +38,5 @@
 - [x] Release notes created
 - [x] Final checklist created
 - [ ] Final repository review
-- [ ] Clean-machine test
+- [x] Clean-machine test — 26 tests passed; compilation and dependency checks passed
 - [ ] Final release commit and tag
