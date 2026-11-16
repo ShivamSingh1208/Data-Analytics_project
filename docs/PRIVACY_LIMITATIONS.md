@@ -3,6 +3,7 @@
 ## Current local-demo safeguards
 
 - Department rows below the metric-specific minimum group size are suppressed.
+- Invalid group-size inputs (missing, non-numeric, infinite, negative, or fractional values) are suppressed by fail-closed validation.
 - The Explorer displays only the latest warehouse reporting month.
 - The historical month selector is disabled to reduce straightforward
   month-to-month differencing through the user interface.

@@ -34,6 +34,7 @@ Release status: Local validation / Release Candidate 1
 - [x] Small-group suppression logic and browser behavior verified locally
 - [x] Small-group privacy unit tests and 19 role-metric combinations passed
 - [x] Explorer historical month selector disabled; latest-month-only regression tests passed (2 tests)
+- [x] Invalid group-size inputs rejected by fail-closed privacy validation; adversarial edge-case tests passed locally
 - [ ] Differencing-attack protection and adversarial privacy tests
 - [ ] Production identity integration
 
