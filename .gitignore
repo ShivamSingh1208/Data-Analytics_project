@@ -55,3 +55,6 @@ node_modules/
 /phase-1/ data/data.py
 
 /backups/
+
+# Streamlit authentication secrets
+.streamlit/secrets.toml

@@ -10,7 +10,44 @@ mkdir -p backups/postgres
 
 echo "[$(date)] Starting PulseIQ PostgreSQL backup."
 
-"$DOCKER" compose ps --status running -q postgres | grep -q .
+# Start Docker Desktop if it is not already available.
+echo "[$(date)] Requesting Docker Desktop startup."
+open -gj -a Docker >/dev/null 2>&1 || true
+
+# Wait up to 10 minutes for the Docker daemon.
+DOCKER_READY=0
+for attempt in {1..60}; do
+  if "$DOCKER" info >/dev/null 2>&1; then
+    DOCKER_READY=1
+    break
+  fi
+  echo "[$(date)] Waiting for Docker daemon ($attempt/60)..."
+  sleep 10
+done
+
+if [[ "$DOCKER_READY" -ne 1 ]]; then
+  echo "[$(date)] ERROR: Docker daemon unavailable after 10 minutes."
+  exit 1
+fi
+
+# Wait up to 10 minutes for the PostgreSQL service.
+POSTGRES_READY=0
+for attempt in {1..60}; do
+  if "$DOCKER" compose exec -T postgres sh -c \
+    'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"' >/dev/null 2>&1; then
+    POSTGRES_READY=1
+    break
+  fi
+  echo "[$(date)] Waiting for PostgreSQL ($attempt/60)..."
+  sleep 10
+done
+
+if [[ "$POSTGRES_READY" -ne 1 ]]; then
+  echo "[$(date)] ERROR: PostgreSQL unavailable after 10 minutes."
+  exit 1
+fi
+
+echo "[$(date)] Docker and PostgreSQL are ready."
 
 STAMP=$(date +%Y%m%d_%H%M%S)
 FINAL="backups/postgres/pulseiq_${STAMP}.dump"

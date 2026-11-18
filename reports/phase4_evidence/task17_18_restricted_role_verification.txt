@@ -1,0 +1,35 @@
+PULSEIQ PHASE 4 — TASK 17/18 SECURITY VERIFICATION
+
+Verification date: 2026-11-18
+
+PostgreSQL test container:
+  pulseiq-privacy-test-postgres
+  Database: pulseiq_privacy_test
+  Port: 5545
+
+Restricted test role:
+  pulseiq_test_runtime
+
+Role security:
+  Superuser: false
+  Create database: false
+  Create role: false
+  Replication: false
+  Bypass RLS: false
+
+Effective permissions:
+  CONNECT database: granted
+  USAGE schema dw: granted
+  SELECT privacy_query_log: granted
+  INSERT privacy_query_log: granted
+  CREATE schema dw: denied
+
+Database login:
+  Successfully connected as pulseiq_test_runtime.
+
+Full test suite:
+  96 passed in 0.93s
+
+Result:
+  Restricted-role PostgreSQL verification PASSED.
+  Production deployment is not yet verified.
