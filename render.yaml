@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: pulseiq-explorer
+    runtime: python
+    region: singapore
+    plan: starter
+    branch: phase4-task17-18-render-security
+    buildCommand: pip install -r requirements-phase4.txt
+    startCommand: python scripts/render_start.py
+    healthCheckPath: /_stcore/health
+    autoDeploy: false
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: DATABASE_URL
+        sync: false
+      - key: OIDC_CLIENT_ID
+        sync: false
+      - key: OIDC_CLIENT_SECRET
+        sync: false
+      - key: OIDC_SERVER_METADATA_URL
+        value: https://accounts.google.com/.well-known/openid-configuration
+      - key: OIDC_REDIRECT_URI
+        sync: false
+      - key: STREAMLIT_COOKIE_SECRET
+        generateValue: true
+      - key: PULSEIQ_PRIVACY_HMAC_KEY
+        generateValue: true
+      - key: PULSEIQ_USER_ROLES
+        sync: false
+      - key: PORT
+        value: 10000
+
+databases:
+  - name: pulseiq-production-db
+    databaseName: pulseiq
+    user: pulseiq
+    plan: basic-256mb
+    region: singapore

@@ -166,3 +166,89 @@ GitHub: https://github.com/ShivamSingh1208/Data-Analytics_project
 ---
 
 PulseIQ — From raw data to actionable business insights.
+
+## Phase 4 — Reporting, API and Self-service Analytics
+
+Phase 4 adds local reporting automation, a metrics API, a Streamlit KPI
+Explorer, and local database operations.
+
+Key deliverables:
+- Monthly PDF and Excel report generation.
+- FastAPI health and five metric endpoints.
+- Month-filtered metric queries.
+- Streamlit KPI Explorer with demonstration role views.
+- Small-group suppression for selected department metrics.
+- PostgreSQL backup and restore procedures.
+- macOS scheduled backup and monthly report jobs.
+- Release checklist and operations documentation.
+
+Useful files:
+- `phase4/build_report.py` — monthly report builder.
+- `api/main.py` — metrics API.
+- `explorer/app.py` — local KPI Explorer.
+- `explorer/access.py` — demonstration role-to-metric mapping.
+- `explorer/privacy.py` — small-group suppression.
+- `scripts/local_ops/` — local backup and report scripts.
+- `docs/LOCAL_OPERATIONS.md` — operations runbook.
+- `PHASE4_FINAL_CHECKLIST.md` — release status and outstanding work.
+- `RELEASE_NOTES_PHASE4.md` — release notes.
+
+### Local Python environment
+
+The tested dependency lock was generated and validated with Python 3.12.
+For a separate Python environment:
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements-lock.txt
+```
+
+Run the project tests:
+
+```bash
+python -m pytest -q
+```
+
+The recorded clean Python environment test passed 45 tests.
+See `docs/CLEAN_ENVIRONMENT_TEST.md` for the scope and limitations.
+
+### Local service requirements
+
+Docker Desktop and Docker Compose are required for the local PostgreSQL
+and Superset services.
+
+```bash
+docker compose up -d
+```
+
+Local service addresses:
+- Superset: `http://127.0.0.1:8088`
+- Metrics API: `http://127.0.0.1:8765`
+- Streamlit Explorer: `http://127.0.0.1:8502`
+
+The Compose host ports for PostgreSQL and Superset are bound to
+127.0.0.1. This is a local setup, not a public hosting configuration.
+
+A new checkout does not automatically contain the original source CSV
+files or the existing populated database and Superset configuration.
+The source CSV files are kept locally in the ` data/` directory.
+A fresh environment therefore requires authorized source data and
+database initialization before the full dashboards and reports can
+be reproduced.
+
+### Security and deployment status
+
+The Explorer's environment-variable roles are demonstration controls,
+not verified user authentication. The Metrics API currently has no
+authentication layer. Small-group suppression is not a complete
+protection against differencing attacks.
+
+Do not expose the API, Explorer, database, or Superset publicly with
+the current demonstration configuration. Production database hosting,
+public application hosting, production identity integration, and
+adversarial privacy protections remain outstanding.
+
+The project is validated as a local release candidate. It is not
+represented as a production-secure hosted service.

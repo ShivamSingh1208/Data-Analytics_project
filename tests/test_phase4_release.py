@@ -8,6 +8,7 @@ import pytest
 from openpyxl import load_workbook
 from pypdf import PdfReader
 
+API_INTEGRATION_ENABLED = bool(os.getenv("PULSEIQ_API_URL"))
 API = os.getenv("PULSEIQ_API_URL", "http://127.0.0.1:8765")
 MONTH = "2026-09"
 
@@ -37,6 +38,10 @@ def api_request(path):
         return exc.code, exc.read().decode()
 
 
+@pytest.mark.skipif(
+    not API_INTEGRATION_ENABLED,
+    reason="Set PULSEIQ_API_URL to run API integration tests.",
+)
 def test_api_health():
     status, body = api_request("/health")
     assert status == 200
@@ -44,6 +49,10 @@ def test_api_health():
 
 
 @pytest.mark.parametrize("metric", METRICS)
+@pytest.mark.skipif(
+    not API_INTEGRATION_ENABLED,
+    reason="Set PULSEIQ_API_URL to run API integration tests.",
+)
 def test_metric_endpoint_for_september(metric):
     status, body = api_request(
         f"/metrics/{metric}?month={MONTH}&limit=500"
@@ -62,6 +71,10 @@ def test_metric_endpoint_for_september(metric):
         ("/metrics/pnl?limit=0", 422),
         ("/metrics/pnl?month=invalid", 422),
     ],
+)
+@pytest.mark.skipif(
+    not API_INTEGRATION_ENABLED,
+    reason="Set PULSEIQ_API_URL to run API integration tests.",
 )
 def test_api_rejects_invalid_requests(path, expected_status):
     status, _ = api_request(path)

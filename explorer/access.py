@@ -26,7 +26,10 @@ METRIC_COLUMNS = {
 
 
 def get_allowed_metrics(role):
-    normalized = role.upper()
+    if not isinstance(role, str) or not role.strip():
+        raise ValueError("Unsupported role.")
+
+    normalized = role.strip().upper()
     if normalized not in ROLE_METRICS:
-        raise ValueError("Unsupported demonstration role.")
+        raise ValueError("Unsupported role.")
     return ROLE_METRICS[normalized]

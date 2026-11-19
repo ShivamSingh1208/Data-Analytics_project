@@ -1,45 +1,94 @@
+"""Authenticated, privacy-controlled PulseIQ KPI Explorer."""
+from __future__ import annotations
+
+import logging
 import os
-from datetime import date
 
 import pandas as pd
 import streamlit as st
 from sqlalchemy import create_engine, text
-from privacy import suppress_small_groups
+
 from access import METRIC_COLUMNS, get_allowed_metrics
+from auth import AuthorizationError, authorize_identity, parse_user_assignments
+from privacy import (
+    PrivacyBudgetExceeded,
+    hash_principal,
+    reserve_release,
+    suppress_small_groups,
+)
+
+logger = logging.getLogger(__name__)
 
 st.set_page_config(
     page_title="PulseIQ KPI Explorer",
-    layout="wide"
+    layout="wide",
 )
 
 st.title("PulseIQ — Self-service KPI Explorer")
 
-st.warning(
-    "LOCAL DEMONSTRATION ONLY. Environment-variable roles are not "
-    "authentication. Do not expose this application publicly."
-)
-
-url = os.getenv("DATABASE_URL")
-role = os.getenv("PULSEIQ_ROLE", "").upper()
-dept = os.getenv("PULSEIQ_MANAGER_DEPARTMENT", "").strip()
-
-roles = {"ADMIN", "HR", "MANAGER", "EXECUTIVE"}
-
-if not url or role not in roles:
-    st.error(
-        "Configure DATABASE_URL and a demonstration PULSEIQ_ROLE."
+# Fail closed if the production identity policy is not configured.
+try:
+    assignments = parse_user_assignments(
+        os.getenv("PULSEIQ_USER_ROLES", "")
     )
+except AuthorizationError as exc:
+    st.error("PulseIQ access policy is not configured correctly.")
+    logger.error("PulseIQ role configuration rejected: %s", exc)
     st.stop()
 
-if role == "MANAGER" and not dept:
-    st.error("Manager department mapping is missing.")
+url = os.getenv("DATABASE_URL", "").strip()
+privacy_key = os.getenv("PULSEIQ_PRIVACY_HMAC_KEY", "")
+
+if not url:
+    st.error("PulseIQ database configuration is unavailable.")
     st.stop()
 
-metric = st.selectbox("Metric", list(get_allowed_metrics(role)))
+if len(privacy_key) < 32:
+    st.error("PulseIQ privacy controls are not configured correctly.")
+    st.stop()
 
+# Require an authenticated OIDC session.
+if not st.user.is_logged_in:
+    st.info("Sign in with your approved company account to continue.")
+    if st.button("Sign in"):
+        st.login()
+    st.stop()
+
+# Only verified identity + explicit allowlist assignment grants access.
+try:
+    identity = authorize_identity(
+        st.user.get("email"),
+        st.user.get("email_verified"),
+        assignments,
+    )
+except AuthorizationError as exc:
+    logger.warning("PulseIQ identity authorization denied: %s", exc)
+    st.error("Your account is not authorized to access PulseIQ.")
+    if st.button("Sign out"):
+        st.logout()
+    st.stop()
+
+email = identity["email"]
+role = identity["role"]
+dept = identity["department_id"]
+
+st.caption(f"Signed in as {email} · Role: {role}")
+
+if st.button("Sign out"):
+    st.logout()
+    st.stop()
+
+# Use only metrics permitted by the server-side role policy.
+allowed_metrics = get_allowed_metrics(role)
+
+if not allowed_metrics:
+    st.error("No metrics are assigned to your account.")
+    st.stop()
+
+metric = st.selectbox("Metric", list(allowed_metrics))
 column, minimum, unit = METRIC_COLUMNS[metric]
 
-
+principal_hash = hash_principal(email, privacy_key)
 engine = create_engine(url, pool_pre_ping=True)
 
 try:
@@ -52,22 +101,20 @@ try:
         ).scalar()
 
         if cutoff is None:
-            st.error("No warehouse data is available.")
+            st.info("No warehouse data is currently available.")
             st.stop()
 
         st.caption(f"Latest warehouse month: {cutoff}")
 
-        selected_month = st.date_input(
-            "Reporting month",
-            value=cutoff,
-            min_value=date(2020, 1, 1),
-            max_value=cutoff,
-        )
-
-        params = {"month": selected_month}
+        # Fixed to the latest warehouse snapshot. Do not add a
+        # historical month selector: repeated comparisons can enable
+        # differencing of small changes in department metrics.
+        selected_month = cutoff
+        params = {"month": cutoff}
 
         where = "WHERE month = :month"
 
+        # Department scope comes only from the authenticated allowlist.
         if role == "MANAGER":
             where += " AND department_id = :department"
             params["department"] = dept
@@ -89,10 +136,10 @@ try:
         )
 
     if df.empty:
-        st.info("No records found for the selected month.")
+        st.info("No records found for the latest reporting month.")
         st.stop()
 
-    # Suppress small groups before displaying department metrics.
+    # Apply strict small-group suppression BEFORE reserving a release.
     safe, hidden = suppress_small_groups(df, minimum)
 
     if hidden:
@@ -105,11 +152,26 @@ try:
         st.info("No department meets the minimum group-size rule.")
         st.stop()
 
+    # Reserve every visible department atomically. No data is displayed
+    # unless the persistent privacy ledger approves the release.
+    department_ids = safe["department_id"].astype(str).tolist()
+
+    with engine.begin() as ledger_connection:
+        reserve_release(
+            connection=ledger_connection,
+            principal_hash=principal_hash,
+            metric=metric,
+            department_ids=department_ids,
+            reporting_month=selected_month,
+        )
+
+    # Display only after successful privacy-budget reservation.
     st.subheader(f"{metric} — {selected_month}")
 
     st.caption(
-        "Department-level values are displayed directly. "
-        "Percentages are not added across departments."
+        "Latest reporting month only. Historical month comparisons are "
+        "disabled to reduce differencing risk. Percentages are not "
+        "added across departments."
     )
 
     st.dataframe(
@@ -119,12 +181,23 @@ try:
     )
 
     st.caption(
-        f"Demonstration role: {role}. "
-        f"Small-group suppression threshold: {minimum}."
+        f"Privacy threshold: {minimum}. "
+        "This release was recorded in the privacy ledger."
     )
 
-except Exception as exc:
-    st.error(f"Explorer query failed: {exc}")
+except PrivacyBudgetExceeded:
+    st.warning(
+        "This metric and department have already been released for "
+        "the same or an adjacent month within the privacy review window. "
+        "The data has not been displayed."
+    )
+
+except Exception:
+    logger.exception("PulseIQ Explorer request failed.")
+    st.error(
+        "The Explorer could not complete this request. "
+        "No data was displayed. Contact the administrator."
+    )
 
 finally:
     engine.dispose()

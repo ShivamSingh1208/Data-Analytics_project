@@ -80,8 +80,15 @@ The payroll reconciliation checks passed:
 
 An overlapping employee-history validity period was identified and requires investigation before the historical date convention is finalized.
 
-## 6. Safe Loading
+## 6. Warehouse Loading and Refresh Limitations
 
-The current loader truncates target tables before inserting staging data. It must be replaced or revised to use safe upserts before it can be treated as a repeatable incremental warehouse load.
+The project currently has separate ETL and database-loading workflows:
 
-The recovered database must remain preserved until the new loading process has been validated.
+- `src/etl_pipeline.py` cleans and validates source CSV files and writes cleaned and rejected outputs. It does not connect to PostgreSQL or refresh warehouse tables.
+- `src/load_warehouse.py` is an initial-load-only loader. It validates the cleaned CSV files, uses staging tables, and refuses to insert into non-empty target tables.
+- `src/load_dimensions.py` also refuses to load into non-empty destination tables.
+- `src/load_to_postgres.py` is a legacy loader that truncates target tables before inserting replacement data. Do not use it against the existing recovered warehouse.
+
+There is currently no verified repeatable incremental warehouse refresh with safe upserts, refresh auditing, and post-refresh reconciliation.
+
+The existing warehouse must remain preserved until a separate refresh implementation has been tested against an isolated database backup. Production refresh verification remains incomplete.
