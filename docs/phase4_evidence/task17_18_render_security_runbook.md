@@ -140,3 +140,63 @@ Evidence: `reports/phase4_evidence/task17_18_restricted_role_verification.txt`
 This verifies the isolated test environment only. Production database
 provisioning, production credentials, OIDC configuration, and deployment
 must be verified separately.
+
+## 9. Optional separate PulseIQ Metrics API service
+
+The current `render.yaml` provisions the Streamlit Explorer only. The
+FastAPI Metrics API is a separate application and is not provisioned by
+that Blueprint. Do not assume that deploying the Explorer also deploys
+the API.
+
+If the API is approved for deployment, create a separate Render Web
+Service from the same repository and deployment branch. Review service
+pricing and region before creation. Suggested service configuration:
+
+- Runtime: Python
+- Build command: `pip install -r requirements-phase4.txt`
+- Start command: `uvicorn api.main:app --host 0.0.0.0 --port $PORT`
+- Health check path: `/health`
+- Region: Singapore, subject to data-owner approval
+- Auto-deploy: disabled until release approval
+
+Configure these API service environment variables:
+
+| Variable | Configuration |
+| --- | --- |
+| `DATABASE_URL` | Restricted runtime PostgreSQL connection URL; never use the owner/migration URL |
+| `API_SESSION_SECRET` | A newly generated high-entropy secret, at least 32 characters |
+| `API_COOKIE_SECURE` | `true` in production |
+| `API_OIDC_REDIRECT_URI` | Exact API callback URL: `https://YOUR-API-SERVICE.onrender.com/auth/callback` |
+| `OIDC_CLIENT_ID` | Approved OIDC web-client ID |
+| `OIDC_CLIENT_SECRET` | Approved OIDC web-client secret |
+| `OIDC_SERVER_METADATA_URL` | `https://accounts.google.com/.well-known/openid-configuration` |
+| `PULSEIQ_USER_ROLES` | Approved JSON role and department allowlist |
+| `PULSEIQ_PRIVACY_HMAC_KEY` | The exact same secret value used by the Explorer service |
+
+The API callback is `/auth/callback`. Register that exact URL as an
+additional authorized redirect URI in the identity provider. Do not
+replace the Explorer callback `/oauth2callback`; the two applications
+have separate callback routes and separate signed sessions.
+
+**Critical shared privacy configuration:** use the same
+`PULSEIQ_PRIVACY_HMAC_KEY` value in the Explorer and API services so
+verified users are hashed consistently when they access the shared
+privacy-release ledger. Do not independently generate a different key
+for the API. Store the value in Render secrets, never in Git.
+
+The API session cookie is named `pulseiq_api_session`, is HttpOnly,
+uses SameSite=Lax, and is Secure when `API_COOKIE_SECURE=true`. The API
+session secret is separate from the Streamlit cookie secret. The API
+does not reuse the Streamlit session cookie.
+
+After configuration, verify `/health`, `/auth/login`, `/auth/callback`,
+`/auth/me`, and `POST /auth/logout` using approved test accounts. Verify
+that unauthenticated metric requests fail, removed users lose access,
+role restrictions are enforced, manager queries remain department-scoped,
+and privacy-ledger conflicts return HTTP 429 without returning data.
+
+Do not expose the API publicly or treat it as production-ready until the
+database migration, restricted-role grants, OIDC callback, secrets,
+allowlist, privacy controls, and live authorization tests have all been
+approved and verified. No API Render service is created by this
+documentation change.
